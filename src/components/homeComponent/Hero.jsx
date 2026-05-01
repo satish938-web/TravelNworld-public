@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import EnquiryForm from "../../forms/EnquiryForm.jsx";
 import FallbackImage from "../../assets/images/heroFallback.png";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE } from "../../utils/api";
 
 /* ─────────────────────────────────────────────
    PARTICLE FIELD – pure CSS-driven dots
@@ -143,8 +144,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchHeroVideos = async () => {
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000";
-        const response = await fetch(`${apiBase}/api/hero-videos?page=Home`);
+        const response = await fetch(`${API_BASE}/api/hero-videos?page=Home`);
         if (response.ok) {
           const data = await response.json();
           if (data.data && data.data.length > 0) {

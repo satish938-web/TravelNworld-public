@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../utils/api';
 import ShareButton from '../components/blogs/ShareButton';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaArrowLeft } from 'react-icons/fa';
 import logo from '../assets/images/logo/logo.jpeg';
@@ -14,7 +15,7 @@ const BlogDetails = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/blogs/${slug}`);
+        const response = await axios.get(`${API_BASE}/api/blogs/${slug}`);
         setBlog(response.data.data);
         setLoading(false);
       } catch (error) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ShareButton from './ShareButton';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../../utils/api';
 
 const BlogCards = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,7 +11,7 @@ const BlogCards = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/blogs');
+        const response = await axios.get(`${API_BASE}/api/blogs`);
         setBlogs(response.data.data);
         setLoading(false);
       } catch (error) {

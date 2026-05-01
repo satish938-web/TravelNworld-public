@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE } from "../utils/api";
 
 const PolicySection = ({ title, content, icon }) => {
   if (!content) return null;
@@ -31,9 +32,9 @@ const TermsAndConditions = () => {
     const fetchAllPolicies = async () => {
       try {
         const [termsRes, paymentRes, cancellationRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/policies", { params: { type: 'terms', category: 'General', destination: 'General' } }),
-          axios.get("http://localhost:5000/api/policies", { params: { type: 'payment', category: 'General', destination: 'General' } }),
-          axios.get("http://localhost:5000/api/policies", { params: { type: 'cancellation', category: 'General', destination: 'General' } })
+          axios.get(`${API_BASE}/api/policies`, { params: { type: 'terms', category: 'General', destination: 'General' } }),
+          axios.get(`${API_BASE}/api/policies`, { params: { type: 'payment', category: 'General', destination: 'General' } }),
+          axios.get(`${API_BASE}/api/policies`, { params: { type: 'cancellation', category: 'General', destination: 'General' } })
         ]);
 
         setPolicies({

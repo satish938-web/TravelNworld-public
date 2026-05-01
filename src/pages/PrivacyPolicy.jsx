@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE } from "../utils/api";
 
 const PrivacyPolicy = () => {
   const [content, setContent] = useState("");
@@ -8,7 +9,7 @@ const PrivacyPolicy = () => {
   useEffect(() => {
     const fetchPolicy = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/policies", {
+        const res = await axios.get(`${API_BASE}/api/policies`, {
           params: { type: 'privacy', category: 'General', destination: 'General' }
         });
         if (res.data.success) {

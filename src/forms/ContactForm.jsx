@@ -4,6 +4,7 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 import axios from 'axios';
+import { API_BASE } from '../utils/api';
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
@@ -65,7 +66,7 @@ const ContactForm = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/contacts', formData);
+      const response = await axios.post(`${API_BASE}/api/contacts`, formData);
       
       if (response.data.success) {
         Swal.fire({

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Star, PlayCircle, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import axios from "axios";
+import { API_BASE } from "../../utils/api";
 
 /* ── Floating background orbs ── */
 const Orbs = () => (
@@ -153,8 +154,7 @@ const Testimonials = () => {
   useEffect(() => {
     const fetch_ = async () => {
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || "http://localhost:5000";
-        const res = await axios.get(`${apiBase}/api/testimonials`);
+        const res = await axios.get(`${API_BASE}/api/testimonials`);
         if (res.data.success) {
           const pub = res.data.data.filter(t => !t.visibility || t.visibility === "Public");
           setTestimonials(pub);
