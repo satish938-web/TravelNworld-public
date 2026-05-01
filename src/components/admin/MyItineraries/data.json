@@ -1,0 +1,216 @@
+[
+  {
+    "id": "1",
+    "name": "Bali, Indonesia",
+    "slug": "bali-indonesia",
+    "images": [
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+    ],
+    "type": "international",
+    "itineraries": [
+      {
+        "id": "bali-1",
+        "title": "Bali Luxury Retreat",
+        "subtitle": "5 Days - Beaches, Spa & Culture",
+        "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+        "images": [
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+          "https://images.unsplash.com/photo-1548013146-72479768bada"
+        ],
+        "price": 79999,
+        "discount": 10,
+        "destinations": ["Kuta", "Ubud", "Uluwatu"],
+        "inclusions": "Breakfast, Airport transfers, Sightseeing as per itinerary",
+        "exclusions": "Flights, Personal expenses, Anything not mentioned in inclusions",
+        "terms": "Prices are subject to change based on availability.",
+        "paymentPolicy": "50% advance to confirm, balance 7 days prior to travel",
+        "days": [
+          {"dayNumber": 1, "title": "Arrive in Bali", "details": "Airport pickup and hotel check-in.", "activities": "Leisure", "meals": "Breakfast", "stay": "Kuta"},
+          {"dayNumber": 2, "title": "Kuta Beach & Water Sports", "details": "Enjoy beach time and optional water sports.", "activities": "Beach, Activities", "meals": "Breakfast", "stay": "Kuta"},
+          {"dayNumber": 3, "title": "Ubud Tour", "details": "Sacred Monkey Forest, Rice Terraces, Tegenungan Waterfall.", "activities": "Sightseeing", "meals": "Breakfast", "stay": "Ubud"},
+          {"dayNumber": 4, "title": "Uluwatu Temple & Kecak Dance", "details": "Sunset at Uluwatu and cultural show.", "activities": "Temple, Show", "meals": "Breakfast", "stay": "Ubud"},
+          {"dayNumber": 5, "title": "Departure", "details": "Check-out and transfer to airport.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      },
+      {
+        "id": "bali-2",
+        "title": "Family Fun in Bali",
+        "subtitle": "4 Days - Waterparks & Temples",
+        "image": "https://images.unsplash.com/photo-1549887534-4a23a5e5b2be",
+        "images": [
+          "https://images.unsplash.com/photo-1549887534-4a23a5e5b2be"
+        ],
+        "price": 59999,
+        "discount": 5,
+        "destinations": ["Kuta", "Nusa Dua"],
+        "inclusions": "Breakfast, Transfers, Waterpark tickets",
+        "exclusions": "Flights, Lunch & Dinner",
+        "terms": "Child policy applies.",
+        "paymentPolicy": "30% advance to confirm",
+        "days": [
+          {"dayNumber": 1, "title": "Arrive & Relax", "details": "Hotel check-in and leisure.", "activities": "Leisure", "meals": "Breakfast", "stay": "Kuta"},
+          {"dayNumber": 2, "title": "Waterbom Park", "details": "Full-day access to park.", "activities": "Waterpark", "meals": "Breakfast", "stay": "Kuta"},
+          {"dayNumber": 3, "title": "Tanah Lot", "details": "Evening visit to Tanah Lot temple.", "activities": "Temple", "meals": "Breakfast", "stay": "Kuta"},
+          {"dayNumber": 4, "title": "Departure", "details": "Airport drop.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Goa, India",
+    "slug": "goa-india",
+    "images": [
+      "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=1074&auto=format&fit=crop"
+    ],
+    "type": "domestic",
+    "itineraries": [
+      {
+        "id": "goa-1",
+        "title": "Goa Beach Escape",
+        "subtitle": "3 Days - Sun, Sand & Sea",
+        "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+        "images": [
+          "https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+        ],
+        "price": 24999,
+        "discount": 0,
+        "destinations": ["Calangute", "Candolim", "Baga"],
+        "inclusions": "Breakfast, Airport transfers, North Goa tour",
+        "exclusions": "Watersports, Personal expenses",
+        "terms": "Off-season rates may vary.",
+        "paymentPolicy": "25% advance to confirm",
+        "days": [
+          {"dayNumber": 1, "title": "Arrive & Beach Time", "details": "Check-in and relax at the beach.", "activities": "Leisure", "meals": "Breakfast", "stay": "Calangute"},
+          {"dayNumber": 2, "title": "North Goa Tour", "details": "Fort Aguada, Baga, Anjuna.", "activities": "Sightseeing", "meals": "Breakfast", "stay": "Calangute"},
+          {"dayNumber": 3, "title": "Departure", "details": "Airport drop.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Paris, France",
+    "slug": "paris-france",
+    "images": [
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
+      "https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+    ],
+    "type": "international",
+    "itineraries": [
+      {
+        "id": "paris-1",
+        "title": "Romantic Paris",
+        "subtitle": "4 Days - Eiffel Tower, Louvre & Seine Cruise",
+        "image": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
+        "images": [
+          "https://images.unsplash.com/photo-1502602898657-3e91760cbb34"
+        ],
+        "price": 109999,
+        "discount": 8,
+        "destinations": ["Eiffel Tower", "Louvre", "Montmartre"],
+        "inclusions": "Breakfast, City tour, Seine cruise",
+        "exclusions": "Visas, Flights",
+        "terms": "Schengen visa required.",
+        "paymentPolicy": "40% advance to confirm",
+        "days": [
+          {"dayNumber": 1, "title": "Arrival & Seine Cruise", "details": "Evening cruise on the Seine.", "activities": "Cruise", "meals": "Breakfast", "stay": "Paris"},
+          {"dayNumber": 2, "title": "City Tour", "details": "Eiffel Tower, Champs-Élysées.", "activities": "Sightseeing", "meals": "Breakfast", "stay": "Paris"},
+          {"dayNumber": 3, "title": "Louvre & Montmartre", "details": "Museum visit and hilltop views.", "activities": "Museum, Walking", "meals": "Breakfast", "stay": "Paris"},
+          {"dayNumber": 4, "title": "Departure", "details": "Transfer to airport.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Jaipur, India",
+    "slug": "jaipur-india",
+    "images": [
+      "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33?q=80&w=1171&auto=format&fit=crop"
+    ],
+    "type": "domestic",
+    "itineraries": [
+      {
+        "id": "jaipur-1",
+        "title": "Royal Jaipur Tour",
+        "subtitle": "3 Days - Palaces, Forts & Culture",
+        "image": "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33",
+        "images": [
+          "https://images.unsplash.com/photo-1603262110263-fb0112e7cc33"
+        ],
+        "price": 20999,
+        "discount": 0,
+        "destinations": ["Amber Fort", "City Palace", "Hawa Mahal"],
+        "inclusions": "Breakfast, Local guide, Monument entries (selected)",
+        "exclusions": "Camera fees, Personal expenses",
+        "terms": "Monument timings apply.",
+        "paymentPolicy": "20% advance to confirm",
+        "days": [
+          {"dayNumber": 1, "title": "Arrival & City Palace", "details": "Local sightseeing.", "activities": "Sightseeing", "meals": "Breakfast", "stay": "Jaipur"},
+          {"dayNumber": 2, "title": "Amber Fort & Hawa Mahal", "details": "Historic tour.", "activities": "Sightseeing", "meals": "Breakfast", "stay": "Jaipur"},
+          {"dayNumber": 3, "title": "Departure", "details": "Airport/Railway transfer.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "name": "Dubai, UAE",
+    "slug": "dubai-uae",
+    "images": [
+      "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=600&auto=format&fit=crop&q=60"
+    ],
+    "type": "international",
+    "itineraries": [
+      {
+        "id": "dubai-1",
+        "title": "Dubai Luxury Tour",
+        "subtitle": "5 Days - Luxury Shopping & Desert Safari",
+        "image": "https://images.unsplash.com/photo-1549887534-4a23a5e5b2be",
+        "images": [
+          "https://images.unsplash.com/photo-1549887534-4a23a5e5b2be",
+          "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+          "https://images.unsplash.com/photo-1533681706739-6d94e7b05e3f"
+        ],
+        "price": 124999,
+        "discount": 12,
+        "destinations": ["Dubai Mall", "Desert Safari", "Marina"],
+        "inclusions": "Breakfast, Desert Safari with BBQ, Dhow Cruise, City tour",
+        "exclusions": "Flights, Visa fees, Personal expenses",
+        "terms": "UAE visa required. Tourism Dirham applicable at hotel.",
+        "paymentPolicy": "50% advance to confirm, balance before check-in",
+        "days": [
+          {"dayNumber": 1, "title": "Arrival & Dhow Cruise", "details": "Evening cruise with dinner at Marina.", "activities": "Cruise, Dinner", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 2, "title": "City Tour & Burj Khalifa (optional)", "details": "Photo stops and mall visit.", "activities": "City tour", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 3, "title": "Desert Safari", "details": "Dune bashing and BBQ dinner.", "activities": "Safari", "meals": "Breakfast, Dinner", "stay": "Dubai"},
+          {"dayNumber": 4, "title": "Leisure & Shopping", "details": "Free day for shopping.", "activities": "Leisure", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 5, "title": "Departure", "details": "Transfer to airport.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      },
+      {
+        "id": "dubai-2",
+        "title": "Family Fun in Dubai",
+        "subtitle": "4 Days - Theme Parks & Burj Khalifa",
+        "image": "https://images.unsplash.com/photo-1533681706739-6d94e7b05e3f",
+        "images": [
+          "https://images.unsplash.com/photo-1533681706739-6d94e7b05e3f"
+        ],
+        "price": 99999,
+        "discount": 7,
+        "destinations": ["IMG Worlds", "Dubai Parks", "Aquarium"],
+        "inclusions": "Breakfast, Park tickets (1 day), Transfers",
+        "exclusions": "Optional rides, Meals not specified",
+        "terms": "Height restrictions apply at parks.",
+        "paymentPolicy": "40% advance to confirm",
+        "days": [
+          {"dayNumber": 1, "title": "Arrive & Aquarium", "details": "Dubai Mall & Aquarium visit.", "activities": "Aquarium", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 2, "title": "Dubai Parks", "details": "Theme park day.", "activities": "Theme Park", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 3, "title": "IMG Worlds", "details": "Indoor theme park.", "activities": "Theme Park", "meals": "Breakfast", "stay": "Dubai"},
+          {"dayNumber": 4, "title": "Departure", "details": "Airport drop.", "activities": "Transfer", "meals": "Breakfast", "stay": "-"}
+        ]
+      }
+    ]
+  }
+]
