@@ -1,7 +1,7 @@
 const rawApiBase = import.meta.env.VITE_API_BASE;
 export const API_BASE = (rawApiBase && rawApiBase !== "undefined" && rawApiBase !== "null")
     ? rawApiBase
-    : ""; // Default to relative paths for Vite proxy (more reliable)
+    : "http://localhost:5000"; // Standard default for local development
 
 export const USE_BACKEND = Boolean(API_BASE);
 

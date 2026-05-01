@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import axios from 'axios';
+import { API_BASE } from '../utils/api';
 
 /**
  * Custom hook to auto-refresh agent data at specified intervals
@@ -35,9 +36,8 @@ export const useAutoRefreshData = (
 
       try {
         isRefreshingRef.current = true;
-        const apiBase = import.meta.env.VITE_API_BASE || '';
         const response = await axios.get(
-          `${apiBase}/api/agents/public/${agentId}?t=${Date.now()}`,
+          `${API_BASE}/api/agents/public/${agentId}?t=${Date.now()}`,
           { timeout: 5000 }
         );
 
@@ -71,8 +71,7 @@ export const useAutoRefreshData = (
 
     try {
       isRefreshingRef.current = true;
-      const apiBase = import.meta.env.VITE_API_BASE || '';
-      const response = await axios.get(`${apiBase}/api/agents/public/${agentId}`);
+      const response = await axios.get(`${API_BASE}/api/agents/public/${agentId}`);
 
       if (response.data?.data && onDataUpdateRef.current) {
         onDataUpdateRef.current(response.data.data);

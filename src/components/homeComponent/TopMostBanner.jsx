@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getImageUrl } from "../../utils/api";
+import { getImageUrl, API_BASE } from "../../utils/api";
 
 const TopMostBanner = () => {
   const [banners, setBanners] = useState([]);
 
   useEffect(() => {
-    axios.get("/api/banners?position=top")
+    axios.get(`${API_BASE}/api/banners?position=top`)
       .then((res) => {
         if (res?.data && Array.isArray(res.data)) setBanners(res.data);
       })

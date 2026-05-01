@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getImageUrl } from "../../utils/api";
+import { getImageUrl, API_BASE } from "../../utils/api";
 
 const MiddleBanner = () => {
   const [banners, setBanners] = useState([]);
 
   useEffect(() => {
-    const apiBase = import.meta.env.VITE_API_BASE || "";
     axios
-      .get(`${apiBase}/api/banners?position=middle`)
+      .get(`${API_BASE}/api/banners?position=middle`)
       .then((res) => setBanners(res.data))
       .catch((err) => {
         console.error("Error fetching banners:", err);

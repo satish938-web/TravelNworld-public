@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Facelessphoto from "../../assets/Facelessphoto.jpg";
-import { getImageUrl } from "../../utils/api";
+import { getImageUrl, API_BASE } from "../../utils/api";
 import { motion } from "framer-motion";
 
 const PAUSE_DURATION = 1200;
@@ -411,8 +411,7 @@ const VerifiedTransportCard = () => {
   useEffect(() => {
     (async () => {
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || "";
-        const res = await axios.get(`${apiBase}/api/agents/verified`);
+        const res = await axios.get(`${API_BASE}/api/agents/verified`);
         setData((res.data.data || []).map(a => ({
           id:       a._id,
           slug:     (a.company || `${a.firstName}-${a.lastName}`).toLowerCase().replace(/\s+/g,"-"),

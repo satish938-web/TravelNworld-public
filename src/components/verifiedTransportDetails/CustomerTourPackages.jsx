@@ -6,7 +6,7 @@ import Header from "../../components/verifiedTransportDetails/Header";
 import RightSide from "../../components/verifiedTransportDetails/RightSide";
 import TourPackages from "../../assets/images/tourPackage.jpeg";
 import Facelessphoto from "../../assets/Facelessphoto.jpg";
-import { getImageUrl } from "../../utils/api";
+import { getImageUrl, API_BASE } from "../../utils/api";
 
 const CustomerTourPackages = () => {
   const navigate = useNavigate();
@@ -57,14 +57,13 @@ const CustomerTourPackages = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || "";
-        const res = await axios.get(`${apiBase}/api/agents/public/${id}`);
+        const res = await axios.get(`${API_BASE}/api/agents/public/${id}`);
         const agent = res.data.data;
 
         if (agent) {
           setTravelItem(mapAgentData(agent));
           // Fetch dynamic itineraries
-          const itRes = await axios.get(`${apiBase}/api/agent-itineraries?agentId=${agent._id}`);
+          const itRes = await axios.get(`${API_BASE}/api/agent-itineraries?agentId=${agent._id}`);
           setDynamicItineraries(itRes.data.data || []);
           setLoading(false);
           return;
@@ -79,8 +78,7 @@ const CustomerTourPackages = () => {
         setTravelItem(staticItem);
         // Try fetching dynamic itineraries by title for static agents
         try {
-          const apiBase = import.meta.env.VITE_API_BASE || "";
-          const itRes = await axios.get(`${apiBase}/api/agent-itineraries?agentId=${encodeURIComponent(staticItem.title)}`);
+          const itRes = await axios.get(`${API_BASE}/api/agent-itineraries?agentId=${encodeURIComponent(staticItem.title)}`);
           setDynamicItineraries(itRes.data.data || []);
         } catch (itErr) {
           console.warn("Could not fetch dynamic itineraries for static agent:", itErr);

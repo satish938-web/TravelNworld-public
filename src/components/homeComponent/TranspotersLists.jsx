@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Facelessphoto from "../../assets/Facelessphoto.jpg";
-import { getImageUrl } from '../../utils/api';
+import { getImageUrl, API_BASE } from '../../utils/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlineArrowLeft, HiOutlineLocationMarker, HiOutlineBriefcase, HiOutlinePhone, HiOutlineChevronRight, HiStar } from 'react-icons/hi';
 
@@ -14,8 +14,7 @@ const TransportersList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const apiBase = import.meta.env.VITE_API_BASE || "";
-        const res = await axios.get(`${apiBase}/api/agents/public`);
+        const res = await axios.get(`${API_BASE}/api/agents/public`);
         const agentsArray = res.data.data || [];
 
         const mapped = agentsArray.map((agent) => ({
