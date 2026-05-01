@@ -16,10 +16,11 @@ const LeftSidebar = () => {
   const [accountOpen, setAccountOpen] = useState(false);
   const [itinerariesOpen,setItinerariesOpen]=useState(false)
 
+  const role = localStorage.getItem("role");
   const menuItems = [
     { path: "buy-leads", label: "Buy Leads", icon: <ShoppingCart size={18} /> },
     { path: "my-leads", label: "My Leads", icon: <List size={18} /> },
-    { path: "hero-videos", label: "Hero Videos", icon: <Film size={18} /> },
+    ...(role === "SUPERADMIN" ? [{ path: "hero-videos", label: "Hero Videos", icon: <Film size={18} /> }] : []),
     { path: "report", label: "My Report", icon: <BarChart size={18} /> },
     { path: "reviews", label: "My Reviews", icon: <Star size={18} /> },
     // My Account will be handled separately

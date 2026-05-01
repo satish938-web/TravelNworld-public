@@ -1,10 +1,9 @@
-import React, { useState, useCallback } from "react";
-import { FcGoogle } from "react-icons/fc";
+import React, { useState, useCallback, useEffect } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 import { Check, AlertCircle, Eye, EyeOff } from "lucide-react";
 import agenlogin from "../assets/images/agentlogin.jpeg";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { API_BASE } from "../utils/api";
 
 const B2BLogin = () => {
@@ -18,7 +17,37 @@ const B2BLogin = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loginMode, setLoginMode] = useState("agent");
-   const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(`${API_BASE}/api/auth/google-login`, {
+        token: credentialResponse.credential,
+      });
+
+      const token = response.data.accessToken;
+      const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // Default 7 days
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("tokenExpiry", String(expiry));
+      localStorage.setItem("role", response.data.user.role);
+      localStorage.setItem("isProfileComplete", String(response.data.user.isProfileComplete));
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      if (!response.data.user.isProfileComplete) {
+        navigate("/admin/profile");
+      } else {
+        navigate("/admin/");
+      }
+    } catch (error) {
+      setErrors({
+        form: error.response?.data?.message || "Google Authentication failed.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   useEffect(() => {
   const token = localStorage.getItem("token");
   const expiry = parseInt(localStorage.getItem("tokenExpiry"));
@@ -170,9 +199,18 @@ const B2BLogin = () => {
             </div>
           )}
 
-          <button type="button" className="w-full flex items-center justify-center bg-red-500 hover:bg-red-600 text-white py-2 rounded-md">
-            <FcGoogle className="mr-2 text-xl" /> Sign in with Google
-          </button>
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                setErrors({ form: "Google Login Failed" });
+              }}
+              useOneTap
+              theme="filled_blue"
+              shape="pill"
+              width="100%"
+            />
+          </div>
 
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" /><span className="px-2 text-gray-500">or</span><hr className="flex-grow border-gray-300" />

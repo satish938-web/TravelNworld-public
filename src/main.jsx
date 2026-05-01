@@ -5,6 +5,7 @@ import App from "./App";
 import './index.css';
 import { Provider } from "react-redux";
 import { store } from "./features/store";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
@@ -12,10 +13,12 @@ if ("scrollRestoration" in window.history) {
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-    </Provider>
+    <GoogleOAuthProvider clientId="1069073868862-8scedl7jk02708mnfe04o04l8sasq2on.apps.googleusercontent.com">
+      <Provider store={store}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+      </Provider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );

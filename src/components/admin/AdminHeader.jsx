@@ -6,6 +6,7 @@ import profilImg from "../../assets/images/profile.png";
 
 export default function AdminHeader({ onOpenLeft, onOpenRight }) {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const handleLogout = () => {
 
@@ -71,14 +72,18 @@ export default function AdminHeader({ onOpenLeft, onOpenRight }) {
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="hidden sm:flex items-center gap-2">
               <img
-                src={profilImg}
+                src={user?.photo || profilImg}
                 alt="Profile"
-                className="h-8 w-8 rounded-full border"
+                className="h-8 w-8 rounded-full border object-cover"
               />
-              <div className="text-sm leading-tight">
-                <p className="font-medium truncate">ADMIRE HOLIDAYS</p>
-                <p className="text-green-600 text-xs flex items-center gap-1">
-                  <span className="h-2 w-2 bg-green-500 rounded-full"></span>
+              <div className="text-sm leading-tight max-w-[150px]">
+                <p className="font-medium truncate uppercase">
+                  {user?.firstName ? `${user.firstName} ${user.lastName}` : "ADMIRE HOLIDAYS"}
+                </p>
+                <p className="text-gray-500 text-[10px] truncate">{user?.email}</p>
+                <p className="text-gray-500 text-[10px] truncate">{user?.phone || "No Phone"}</p>
+                <p className="text-green-600 text-[10px] flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 bg-green-500 rounded-full"></span>
                   Active
                 </p>
               </div>
