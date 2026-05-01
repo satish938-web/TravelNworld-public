@@ -235,15 +235,18 @@ const injectStyles = () => {
     .vtc-viewall {
       font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800;
       letter-spacing: 2px; text-transform: uppercase;
-      color: #000; background: #fff;
-      border: 1.5px solid rgba(0,0,0,0.12); border-radius: 100px;
-      padding: 10px 26px; cursor: pointer;
-      transition: all 0.28s ease;
+      color: #fff; 
+      background: linear-gradient(90deg, #dc2626 0%, #000000 100%);
+      border: none; border-radius: 100px;
+      padding: 12px 30px; cursor: pointer;
+      transition: all 0.3s ease;
       display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.25);
     }
     .vtc-viewall:hover {
-      background: #000; color: #fff; border-color: #000;
-      transform: translateX(4px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      filter: brightness(1.1);
     }
 
     /* ─────────────────── Nav buttons ─────────────────── */
@@ -487,7 +490,7 @@ const VerifiedTransportCard = () => {
         backgroundSize:"56px 56px",
       }} />
 
-      <div style={{ maxWidth:1800, margin:"0 auto", padding:"0 clamp(20px,4vw,56px)", position:"relative", zIndex:1 }}>
+      <div style={{ maxWidth: 1800, margin: "0 auto", padding: "0 clamp(32px, 7vw, 100px)", position: "relative", zIndex: 1 }}>
 
         {/* ── Header ── */}
         <div style={{

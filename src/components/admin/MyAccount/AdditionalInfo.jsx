@@ -46,25 +46,29 @@ const TextAreaField = ({ label, value, onChange, placeholder, rows = 4 }) => (
 
 const TagInput = ({ label, value, onChange, placeholder }) => {
   const [inputValue, setInputValue] = useState("");
-  const tags = value ? value.split(",").map(t => t.trim()).filter(t => t !== "") : [];
+  
+  // Handle both string and array values safely
+  const tags = Array.isArray(value) 
+    ? value 
+    : (typeof value === "string" && value ? value.split(",").map(t => t.trim()).filter(t => t !== "") : []);
 
   const handleKeyDown = (e) => {
     if ((e.key === "Enter" || e.key === ",") && inputValue.trim()) {
       e.preventDefault();
       if (!tags.includes(inputValue.trim())) {
         const newTags = [...tags, inputValue.trim()];
-        onChange(newTags.join(","));
+        onChange(newTags);
       }
       setInputValue("");
     } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
       const newTags = tags.slice(0, -1);
-      onChange(newTags.join(","));
+      onChange(newTags);
     }
   };
 
   const removeTag = (tagToRemove) => {
     const newTags = tags.filter(t => t !== tagToRemove);
-    onChange(newTags.join(","));
+    onChange(newTags);
   };
 
   return (

@@ -37,13 +37,13 @@ const VerifiedHotelsList = () => {
               <div className="mt-auto w-full">
                 <button
                   onClick={() => navigate(`/book-hotel/${id}`)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full text-sm"
+                  className="bg-premium-gradient text-white px-4 py-2 rounded-md w-full text-sm font-bold shadow-md shadow-red-600/10"
                 >
                   Book Hotel
                 </button>
                 <button
                   onClick={() => navigate(`/hotel-details/${id}`)}
-                  className="border border-blue-600 mt-1 hover:bg-blue-600 hover:text-white text-blue-600 px-4 py-2 rounded-md w-full text-sm"
+                  className="border border-red-600 mt-2 hover:bg-black hover:text-white text-red-600 px-4 py-2 rounded-md w-full text-sm font-bold transition-all duration-300"
                 >
                   View Details
                 </button>
@@ -58,7 +58,7 @@ const VerifiedHotelsList = () => {
         <div className="mt-8 flex justify-center">
           <button
             onClick={() => setShowAll(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md text-sm font-semibold shadow-md transition duration-300"
+            className="bg-premium-gradient text-white px-10 py-3 rounded-full text-sm font-black uppercase tracking-widest shadow-xl shadow-red-600/20 transition duration-300"
           >
             View All Hotels
           </button>

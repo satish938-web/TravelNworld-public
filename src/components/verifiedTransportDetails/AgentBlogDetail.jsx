@@ -44,6 +44,13 @@ const AgentBlogDetail = () => {
     }
   };
 
+  // Debug: log blog data
+  useEffect(() => {
+    if (blog) {
+      console.log("Blog loaded:", blog);
+    }
+  }, [blog]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -51,13 +58,6 @@ const AgentBlogDetail = () => {
       </div>
     );
   }
-
-  // Debug: log blog data
-  useEffect(() => {
-    if (blog) {
-      console.log("Blog loaded:", blog);
-    }
-  }, [blog]);
 
   if (!agent || !blog) {
     return (
