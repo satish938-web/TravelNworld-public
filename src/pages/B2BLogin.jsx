@@ -208,7 +208,7 @@ const B2BLogin = () => {
               useOneTap
               theme="filled_blue"
               shape="pill"
-              width="100%"
+              width="350"
             />
           </div>
 
