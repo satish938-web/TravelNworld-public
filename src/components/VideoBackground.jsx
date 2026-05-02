@@ -154,21 +154,21 @@ const VideoBackground = ({ children }) => {
           ))}
         </div>
       )}
-
+ 
       {/* ------------------- Hero content (text + form) ------------------- */}
-      <div className="relative z-10 flex items-center justify-between h-full px-10">
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-center lg:justify-between h-full px-6 md:px-10 gap-10">
         {/* Left side text */}
-        <div className="text-white max-w-lg">
-          <h1 className="text-5xl font-bold mb-4">Let&apos;s Explore Goa</h1>
-          <p className="text-lg text-gray-200">
+        <div className="text-white max-w-lg text-center lg:text-left">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 drop-shadow-lg">Let&apos;s Explore Goa</h1>
+          <p className="text-sm md:text-base lg:text-lg text-gray-200 font-medium drop-shadow-md">
             Enjoy the beaches, nightlife, and culture of Goa with our exclusive travel packages.
           </p>
         </div>
-
+ 
         {/* Right side form */}
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-[25%] max-w-md">
-          <h2 className="text-lg font-semibold mb-4 text-blue-600">Tell us what you&apos;re looking for!</h2>
-          <div className="grid grid-cols-1 gap-4">
+        <form onSubmit={handleSubmit} className="bg-white/95 backdrop-blur-md p-6 rounded-3xl shadow-2xl w-full max-w-sm border border-white/20">
+          <h2 className="text-lg font-black mb-4 text-slate-900 uppercase tracking-tight">Tell us your requirements!</h2>
+          <div className="grid grid-cols-1 gap-3">
             <input
               type="text"
               name="name"
@@ -176,7 +176,7 @@ const VideoBackground = ({ children }) => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-2 py-1 border border-gray-300 rounded"
+              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition-all text-sm"
             />
             <input
               type="text"
@@ -185,19 +185,19 @@ const VideoBackground = ({ children }) => {
               value={formData.company_name}
               onChange={handleChange}
               required
-              className="w-full px-2 py-1 border border-gray-300 rounded"
+              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition-all text-sm"
             />
             {/* Phone + Country Code */}
-            <div className="flex items-center border border-gray-300 rounded overflow-hidden">
+            <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-red-500 transition-all bg-white">
               <select
                 name="countryCode"
                 value={formData.countryCode}
                 onChange={handleChange}
-                className="px-2 py-1 border-r border-gray-300 text-sm focus:outline-none bg-white"
+                className="px-3 py-2 border-r border-slate-100 text-xs font-bold focus:outline-none bg-slate-50"
               >
                 {countryCodes.map((item) => (
                   <option key={item.code} value={item.code}>
-                    {item.code} {item.label}
+                    {item.code}
                   </option>
                 ))}
               </select>
@@ -211,51 +211,52 @@ const VideoBackground = ({ children }) => {
                   setFormData({ ...formData, phone: value });
                 }}
                 required
-                className="flex-1 px-2 py-1 text-sm focus:outline-none"
+                className="flex-1 px-4 py-2 text-sm focus:outline-none"
               />
             </div>
             <input
               type="email"
               name="email"
-              placeholder="Email"
+              placeholder="Email Address"
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-2 py-1 border border-gray-300 rounded"
+              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition-all text-sm"
             />
             <input
               type="text"
               name="location"
-              placeholder="Location"
+              placeholder="Your Location"
               value={formData.location}
               onChange={handleChange}
               required
-              className="w-full px-2 py-1 border border-gray-300 rounded"
+              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition-all text-sm"
             />
             <textarea
               name="your_requirements"
-              placeholder="Your Requirements"
+              placeholder="Your Travel Requirements"
               value={formData.your_requirements}
               onChange={handleChange}
               required
-              className="w-full px-2 py-1 border border-gray-300 rounded"
+              rows="2"
+              className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 outline-none transition-all text-sm resize-none"
             />
-            <label className="flex items-center">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 name="agree"
                 checked={formData.agree}
                 onChange={handleChange}
-                className="mr-2"
+                className="mt-1 accent-red-600"
                 required
               />
-              I agree to get all Email/SMS from you.
+              <span className="text-[10px] text-slate-500 font-medium leading-tight">I agree to receive communications via Email/SMS.</span>
             </label>
             <button
               type="submit"
-              className="w-full bg-blue-900 text-white py-2 rounded hover:bg-blue-800 transition"
+              className="w-full bg-premium-gradient text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-black transition-all shadow-xl shadow-red-200 active:scale-95"
             >
-              Submit
+              Submit Request
             </button>
           </div>
         </form>

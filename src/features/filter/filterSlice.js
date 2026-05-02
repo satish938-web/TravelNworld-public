@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import itinerariesData from "../../components/admin/MyItineraries/data.json";
+import itinerariesData from "../../components/agent/MyItineraries/data.json";
 
 // Async thunk to simulate backend
 export const fetchItineraries = createAsyncThunk(

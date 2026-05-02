@@ -128,7 +128,7 @@ export default function ItineraryForm() {
       await postJson("/api/itineraries", payload);
 
       toast.success("Itinerary saved successfully!", { position: "top-right", autoClose: 3000 });
-      navigate("/admin/Manage-Itianary");
+      navigate("/agent/Manage-Itianary");
     } catch (error) {
       console.error(error);
       toast.error("Failed to save itinerary", { position: "top-right", autoClose: 3000 });

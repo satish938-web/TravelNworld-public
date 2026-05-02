@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/images/logo/logo.jpeg';
+import logo from '../assets/images/logo/logo.png';
 import PlanMyTripForm from '../forms/PlanMyTripForm';
 
 const NavBar = () => {

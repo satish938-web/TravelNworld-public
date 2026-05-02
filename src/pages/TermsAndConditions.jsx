@@ -21,94 +21,76 @@ const PolicySection = ({ title, content, icon }) => {
 };
 
 const TermsAndConditions = () => {
-  const [policies, setPolicies] = useState({
-    terms: "",
-    payment: "",
-    cancellation: ""
-  });
+  const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAllPolicies = async () => {
+    const fetchTerms = async () => {
       try {
-        const [termsRes, paymentRes, cancellationRes] = await Promise.all([
-          axios.get(`${API_BASE}/api/policies`, { params: { type: 'terms', category: 'General', destination: 'General' } }),
-          axios.get(`${API_BASE}/api/policies`, { params: { type: 'payment', category: 'General', destination: 'General' } }),
-          axios.get(`${API_BASE}/api/policies`, { params: { type: 'cancellation', category: 'General', destination: 'General' } })
-        ]);
-
-        setPolicies({
-          terms: termsRes.data.data?.content || "",
-          payment: paymentRes.data.data?.content || "",
-          cancellation: cancellationRes.data.data?.content || ""
+        const res = await axios.get(`${API_BASE}/api/policies`, {
+          params: { type: 'terms', category: 'General', destination: 'General' }
         });
+        if (res.data.success) {
+          setContent(res.data.data.content);
+        }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching policies:", error);
+        console.error("Error fetching terms:", error);
         setLoading(false);
       }
     };
-    fetchAllPolicies();
+    fetchTerms();
   }, []);
 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-orange-500 mb-4"></div>
-        <p className="font-medium italic">Preparing documents...</p>
+        <p className="font-medium italic">Loading terms of use...</p>
       </div>
     );
   }
 
-  const hasContent = policies.terms || policies.payment || policies.cancellation;
-
   return (
-    <div className="min-h-screen bg-gray-50/50 py-16 px-4 flex justify-center">
+    <div className="min-h-screen bg-gray-50/50 py-16 px-4 flex justify-center font-sans">
       <div className="w-full max-w-5xl">
         {/* Header */}
         <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-orange-50 rounded-3xl text-orange-600 mb-6 shadow-sm">
+            <i className="fas fa-file-contract text-3xl"></i>
+          </div>
           <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-4 tracking-tighter">
-            Terms <span className="text-orange-600">&</span> Conditions
+            Terms of <span className="text-orange-600">Use</span>
           </h1>
-          <div className="h-2 w-32 bg-orange-500 mx-auto rounded-full mb-6" />
-          <p className="text-gray-400 text-sm font-bold uppercase tracking-[0.3em]">Official Guidelines & Policies</p>
+          <div className="h-1.5 w-24 bg-orange-500 mx-auto rounded-full mb-6" />
+          <p className="text-gray-400 text-xs font-black uppercase tracking-[0.4em]">Official Site Guidelines</p>
         </div>
 
-        {hasContent ? (
-          <>
-            <PolicySection 
-              title="General Terms of Use" 
-              content={policies.terms} 
-              icon={<i className="fas fa-file-contract text-xl"></i>} 
+        {content ? (
+          <div className="bg-white rounded-[3rem] shadow-2xl shadow-gray-200/40 p-8 md:p-16 mb-12 border border-gray-100 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-500 to-orange-400"></div>
+            <div 
+              className="prose prose-lg max-w-none prose-orange leading-relaxed text-gray-700 policy-content-body"
+              dangerouslySetInnerHTML={{ __html: content }} 
             />
-            <PolicySection 
-              title="Payment & Booking Mode" 
-              content={policies.payment} 
-              icon={<i className="fas fa-credit-card text-xl"></i>} 
-            />
-            <PolicySection 
-              title="Cancellation & Refund Policy" 
-              content={policies.cancellation} 
-              icon={<i className="fas fa-undo-alt text-xl"></i>} 
-            />
-          </>
+          </div>
         ) : (
           <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-dashed border-gray-200">
             <div className="text-gray-200 mb-6 italic">
               <i className="fas fa-folder-open text-7xl"></i>
             </div>
-            <p className="text-gray-400 text-xl font-medium">Terms and policies are currently under review. Please check back later.</p>
+            <p className="text-gray-400 text-xl font-medium">Terms of use are currently under review. Please check back later.</p>
           </div>
         )}
 
         {/* Support Section */}
         <div className="mt-12 text-center py-10 border-t border-gray-200">
-          <p className="text-gray-500 mb-4 font-medium italic">Have any questions about our terms?</p>
+          <p className="text-gray-500 mb-6 font-medium italic">Have any questions about these terms?</p>
           <a 
             href="/contactUs" 
-            className="text-orange-600 font-black hover:text-orange-700 transition-colors uppercase tracking-widest text-sm"
+            className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-600 transition-all shadow-xl active:scale-95"
           >
-            Reach Out to Support →
+            Contact Support Team
           </a>
         </div>
       </div>

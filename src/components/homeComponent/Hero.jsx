@@ -263,9 +263,18 @@ const Hero = () => {
           <ScanLines />
           <Grain />
 
+          {/* ── Background Layer (Always visible until video covers it) ── */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src={FallbackImage}
+              alt="Hero Background"
+              className="w-full h-full object-cover opacity-50 grayscale-[0.3]"
+            />
+          </div>
+
           {/* ── Video ── */}
-          <AnimatePresence>
-            {currentVideo ? (
+          <AnimatePresence mode="wait">
+            {currentVideo && (
               <motion.video
                 key={currentVideo.id || currentVideoIndex}
                 ref={videoRef}
@@ -281,18 +290,8 @@ const Hero = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isReady ? 1 : 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                className="absolute w-full h-full object-cover"
-              />
-            ) : (
-              <motion.img
-                key="fallback"
-                src={FallbackImage}
-                alt="Hero Fallback"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
-                className="absolute w-full h-full object-cover"
+                transition={{ duration: 1.2, ease: "easeInOut" }}
+                className="absolute w-full h-full object-cover z-0"
               />
             )}
           </AnimatePresence>
@@ -622,7 +621,7 @@ const Hero = () => {
                           color: "#ff6666",
                         }}
                       >
-                        Plan Your Journey
+                        Join with us as a member
                       </span>
                     </div>
                   </div>

@@ -7,10 +7,10 @@ export const trendingDestinations = [
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       img,
- 
+
     ],
     highlights: [
       "Personalized trip planning",
@@ -22,7 +22,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -66,13 +66,13 @@ export const trendingDestinations = [
     ],
     contact: "+91-9876543210", // ← added contact number
   },
-   {
+  {
     id: "agency2",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -88,7 +88,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -130,15 +130,15 @@ export const trendingDestinations = [
       "Wallets (Paytm, Amazon Pay)",
       "Bank Transfer / NEFT",
     ],
-    contact: "+91-9876543210", 
+    contact: "+91-9876543210",
   },
-   {
+  {
     id: "agency3",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -154,7 +154,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -198,13 +198,13 @@ export const trendingDestinations = [
     ],
     contact: "+91-9876543210", // ← added contact number
   },
-   {
+  {
     id: "agency4",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -220,7 +220,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -264,13 +264,13 @@ export const trendingDestinations = [
     ],
     contact: "+91-9876543210", // ← added contact number
   },
-   {
+  {
     id: "agency5",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -286,7 +286,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -330,13 +330,13 @@ export const trendingDestinations = [
     ],
     contact: "+91-9876543210", // ← added contact number
   },
-   {
+  {
     id: "agency6",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -352,7 +352,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },
@@ -396,13 +396,13 @@ export const trendingDestinations = [
     ],
     contact: "+91-9876543210", // ← added contact number
   },
-   {
+  {
     id: "agency7",
     title: "Agent Uttarakhand",
     description:
       "Connect with our expert Uttarakhand travel agent for the best deals, personalized planning, and insider access to hidden gems across the Himalayas.",
     price: "Contact for Pricing",
-    duration: "Custom Packages",    
+    duration: "Custom Packages",
     images: [
       "https://images.unsplash.com/photo-1589330694653-ded6df03f754?w=800&auto=format&fit=crop",
       "https://images.unsplash.com/photo-1621351183012-e2f9972dd9bf?w=800&auto=format&fit=crop",
@@ -418,7 +418,7 @@ export const trendingDestinations = [
     itinerary: [
       {
         day: 1,
-        title: "Free Consultation",
+        title: " Get a free consultation",
         description:
           "Schedule a one-on-one call to discuss your travel preferences, budget, and timeline. The agent will gather all your requirements.",
       },

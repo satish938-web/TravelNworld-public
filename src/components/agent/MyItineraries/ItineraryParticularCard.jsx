@@ -38,7 +38,7 @@ export default function ItineraryParticularCard() {
 
   function goBack() {
     // In real app, use router navigation or window.history.back()
-    navigate("/admin/Manage-Itianary")
+    navigate("/agent/Manage-Itianary")
     ;
   }
 
@@ -94,7 +94,7 @@ export default function ItineraryParticularCard() {
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center">
           <button
-            onClick={(e) => { e.stopPropagation(); navigate(`/admin/destination/${slug}/destinations/${c.id}`); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/agent/destination/${slug}/destinations/${c.id}`); }}
             className="relative inline-block border-2 border-blue-600 text-blue-600 px-5 py-2 rounded-md font-semibold uppercase tracking-wide hover:bg-blue-600 hover:text-white transition-all"
           >
             View

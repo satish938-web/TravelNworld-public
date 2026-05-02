@@ -19,6 +19,8 @@ const Packages = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchParams] = useSearchParams();
   const agentIdFilter = searchParams.get("agentId");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8;
   const navigate = useNavigate();
 
   const fetchItineraries = useCallback(async () => {
@@ -27,18 +29,9 @@ const Packages = () => {
       const typeParam = activeTab === "all" ? "" : `&type=${activeTab}`;
       const agentParam = agentIdFilter ? `&agentId=${agentIdFilter}` : "";
       
-      // Fetch from both Admin and Agent collections
-      const [res1, res2] = await Promise.all([
-        getJson(`/api/itineraries?limit=100${typeParam}`),
-        getJson(`/api/agent-itineraries?limit=100${typeParam}${agentParam}`)
-      ]);
-      
-      const merged = [
-        ...(res1?.data || []),
-        ...(res2?.data || [])
-      ];
-      
-      setItineraries(merged);
+      // Only fetch packages assigned to agents
+      const res = await getJson(`/api/agent-itineraries?limit=100${typeParam}${agentParam}`);
+      setItineraries(res?.data || []);
     } catch (err) {
       console.error("Error fetching packages:", err);
     } finally {
@@ -48,6 +41,7 @@ const Packages = () => {
 
   useEffect(() => {
     fetchItineraries();
+    setCurrentPage(1); // Reset to page 1 on tab or filter change
   }, [fetchItineraries]);
 
   const filtered = itineraries.filter(it => 
@@ -55,68 +49,82 @@ const Packages = () => {
     it.destination?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+  const currentItineraries = filtered.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Premium Hero Header */}
-      <div className="relative pt-40 pb-32 px-6 overflow-hidden bg-black">
-        {/* Background Effects */}
+    <div className="min-h-screen bg-[#f9fafb]">
+      {/* Refined Corporate Hero Header */}
+      <div className="relative pt-44 pb-36 px-6 overflow-hidden bg-slate-950">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(220,38,38,0.15),transparent_70%)]" />
-          <div className="absolute inset-0 bg-grid-white/[0.02]" />
-          {/* Animated Orbs */}
-          <motion.div 
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-red-600/20 blur-[120px] rounded-full"
-          />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(220,38,38,0.1),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(37,99,235,0.05),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          {/* Kicker */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-3 mb-8"
-          >
-            <span className="w-12 h-[2px] bg-red-600 rounded-full" />
-            <span className="text-red-600 font-black uppercase tracking-[0.6em] text-[10px]">Infinite Exploration</span>
-            <span className="w-12 h-[2px] bg-red-600 rounded-full" />
-          </motion.div>
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+            <div className="text-left max-w-3xl">
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-3 mb-6"
+              >
+                <span className="w-10 h-px bg-red-600"></span>
+                <span className="text-red-600 font-bold uppercase tracking-[0.4em] text-[10px]">World-Class Itineraries</span>
+              </motion.div>
 
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-6xl md:text-9xl font-black text-white tracking-tighter mb-6 leading-none"
-          >
-            Curated <span className="text-red-600 italic font-medium">Collections</span>
-          </motion.h1>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-5xl md:text-8xl font-black text-white tracking-tight leading-[0.9] mb-8"
+              >
+                Curated <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-400">Collections</span>
+              </motion.h1>
 
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base font-medium tracking-wide leading-relaxed"
-          >
-            From snow-capped peaks to tropical beaches, explore our comprehensive range 
-            of luxury itineraries crafted by world-class travel experts.
-          </motion.p>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-2xl"
+              >
+                Explore a hand-picked selection of luxury travel packages designed by verified experts to deliver unforgettable experiences.
+              </motion.p>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+              className="hidden lg:block bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl"
+            >
+              <div className="text-white text-center">
+                <p className="text-4xl font-black text-red-600">500+</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Verified Packages</p>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Toolbar - Sticky Glass UI */}
-      <div className="sticky top-0 bg-white/80 backdrop-blur-xl z-40 border-b border-gray-100 py-6">
-        <div className="max-w-[1400px] mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-8">
-          {/* Category Tabs */}
-          <div className="flex bg-gray-100 p-1 rounded-full shadow-inner">
+      {/* Corporate Toolbar */}
+      <div className="sticky top-0 bg-white/90 backdrop-blur-xl z-40 border-b border-slate-200 py-6 shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Categories */}
+          <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
             {["all", "domestic", "international"].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-8 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                className={`px-6 py-2 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-300 ${
                   activeTab === tab 
-                    ? "bg-premium-gradient text-white shadow-xl shadow-red-200" 
-                    : "text-gray-400 hover:text-slate-900"
+                    ? "bg-slate-900 text-white shadow-lg" 
+                    : "text-slate-500 hover:text-slate-900"
                 }`}
               >
                 {tab}
@@ -124,38 +132,38 @@ const Packages = () => {
             ))}
           </div>
 
-          {/* Premium Search Bar */}
-          <div className="relative w-full lg:w-[450px] group">
-            <HiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-600 transition-colors" size={20} />
+          {/* Sleek Search */}
+          <div className="relative w-full md:w-96">
             <input 
               type="text"
-              placeholder="Where do you want to go?"
+              placeholder="Search destination or package..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-16 pr-8 py-4 bg-gray-50 border border-transparent rounded-full text-sm font-medium focus:ring-0 focus:border-red-600/30 focus:bg-white transition-all shadow-sm"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all shadow-sm"
             />
+            <HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           </div>
         </div>
       </div>
 
-      {/* Main Grid Area */}
-      <div className="max-w-[1400px] mx-auto px-6 py-20 min-h-[600px]">
+      {/* Main Grid */}
+      <div className="max-w-[1400px] mx-auto px-6 py-20">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="bg-gray-50 rounded-[2.5rem] aspect-[4/5] animate-pulse" />
+              <div key={i} className="bg-white rounded-2xl aspect-[4/5] animate-pulse border border-slate-100" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <AnimatePresence mode="popLayout">
-              {filtered.map((it, i) => (
+              {currentItineraries.map((it, i) => (
                 <motion.div
                   layout
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.5, delay: (i % 4) * 0.05 }}
+                  transition={{ duration: 0.4, delay: (i % 4) * 0.05 }}
                   key={it._id}
                   onClick={() => {
                     const routeBase = it.type === "international" ? "international-itinerary-detail" : "domestic-itinerary";
@@ -163,58 +171,105 @@ const Packages = () => {
                     const id = it.slug || it._id;
                     navigate(`/${routeBase}/${dest}/${id}`);
                   }}
-                  className="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-50 flex flex-col h-full cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-red-600/10"
+                  className="group bg-white rounded-2xl overflow-hidden border border-slate-200 flex flex-col h-full cursor-pointer transition-all duration-300 hover:border-red-200 hover:shadow-xl hover:shadow-slate-200/50"
                 >
-                  {/* Image Area */}
-                  <div className="relative h-72 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden bg-slate-100">
                     <img 
-                      src={getImageUrl(it.coverImageUrl)} 
+                      src={getImageUrl(it.coverImageUrl) || "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop"} 
                       alt={it.title}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=800&auto=format&fit=crop"; }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                     
-                    {/* Duration Badge */}
-                    <div className="absolute bottom-6 right-6 flex items-center gap-1.5 bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-full border border-white/10">
-                      <HiOutlineClock size={14} className="text-red-400" />
-                      {it.duration}
-                    </div>
-
-                    {/* Type Badge */}
-                    <div className="absolute top-6 left-6">
-                      <span className="bg-premium-gradient text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-red-600/30">
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-slate-900/90 backdrop-blur text-white text-[9px] font-black px-3 py-1 rounded-md uppercase tracking-widest">
                         {it.type}
                       </span>
                     </div>
+
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                      <div className="bg-white/90 backdrop-blur px-2.5 py-1 rounded-lg shadow-sm flex items-center gap-1.5 border border-white/20">
+                        <HiOutlineClock size={12} className="text-red-600" />
+                        <span className="text-[10px] font-bold text-slate-800">{it.duration || 'Flexible'}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Content Area */}
-                  <div className="p-8 flex flex-col flex-1">
-                    <div className="h-[3px] w-6 bg-red-600 rounded-full mb-4 group-hover:w-10 transition-all duration-300 shadow-[0_0_10px_rgba(220,38,38,0.5)]" />
-                    <h3 className="text-2xl font-black text-slate-900 leading-tight mb-4 group-hover:text-red-600 transition-colors line-clamp-2 uppercase tracking-tight">
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[10px] font-bold text-red-600 uppercase tracking-widest">{it.destination || 'Global'}</span>
+                      <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        {it.agentId?.company || 'Verified Expert'}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-slate-900 leading-tight mb-6 group-hover:text-red-600 transition-colors line-clamp-2">
                       {it.title}
                     </h3>
                     
-                    {it.priceFrom > 0 && (
-                      <div className="mt-auto pt-6 border-t border-gray-50 flex items-baseline justify-between">
-                         <div>
-                            <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-1">Explore for</p>
-                            <p className="text-2xl font-black text-slate-900">
-                              <span className="text-sm font-bold text-red-600 mr-0.5">₹</span>
-                              {it.priceFrom.toLocaleString("en-IN")}
-                            </p>
-                         </div>
-                         <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-900 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
-                            <HiOutlineChevronRight size={20} />
-                         </div>
-                      </div>
-                    )}
+                    <div className="mt-auto pt-5 border-t border-slate-50 flex items-center justify-between">
+                       <div>
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Starting From</p>
+                          <p className="text-xl font-black text-slate-900">
+                            {it.priceFrom > 0 ? (
+                              <>
+                                <span className="text-sm font-bold text-red-600 mr-0.5">₹</span>
+                                {it.priceFrom.toLocaleString("en-IN")}
+                              </>
+                            ) : (
+                              "On Request"
+                            )}
+                          </p>
+                       </div>
+                       <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-red-600 group-hover:text-white transition-all duration-300">
+                          <HiOutlineChevronRight size={18} />
+                       </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="col-span-full flex justify-center items-center gap-3 mt-16">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs hover:border-red-600 hover:text-red-600 disabled:opacity-30 transition-all shadow-sm"
+                >
+                  PREVIOUS
+                </button>
+                
+                <div className="flex items-center gap-2">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-10 h-10 rounded-xl font-bold text-xs transition-all ${
+                        currentPage === i + 1
+                          ? "bg-slate-900 text-white shadow-lg"
+                          : "bg-white border border-slate-200 text-slate-500 hover:border-red-600 hover:text-red-600"
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold text-xs hover:border-red-600 hover:text-red-600 disabled:opacity-30 transition-all shadow-sm"
+                >
+                  NEXT
+                </button>
+              </div>
+            )}
           </div>
         )}
+
 
         {/* Empty State */}
         {!loading && filtered.length === 0 && (

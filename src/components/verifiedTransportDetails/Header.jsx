@@ -86,13 +86,13 @@ const Header = ({ travelItem }) => {
 
       {/* 2. Brand Identity Section (Overlapping) */}
       <div className="px-6 md:px-10 relative">
-        <div className="flex flex-col md:flex-row items-end gap-5 -mt-12 md:-mt-16 mb-6">
+        <div className="flex flex-col md:flex-row items-center md:items-end gap-5 -mt-12 md:-mt-16 mb-6 text-center md:text-left">
           {/* Logo Circle */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.3 }}
-            className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex-shrink-0 z-10"
+            className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white flex-shrink-0 z-10 mx-auto md:mx-0"
           >
             <img 
               src={getImageUrl(travelItem.image)} 
@@ -100,20 +100,20 @@ const Header = ({ travelItem }) => {
               className="w-full h-full object-cover"
             />
           </motion.div>
-
+ 
           {/* Title & Key Stats */}
-          <div className="flex-1 pb-1">
+          <div className="flex-1 pb-1 w-full">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex items-center gap-2 mb-1"
+              className="flex items-center justify-center md:justify-start gap-2 mb-1"
             >
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
                 {travelItem.title}
               </h1>
               {travelItem.verified && (
-                <CheckCircle2 className="text-red-600 fill-red-50" size={22} />
+                <CheckCircle2 className="text-red-600 fill-red-50 flex-shrink-0" size={22} />
               )}
             </motion.div>
             
@@ -121,7 +121,7 @@ const Header = ({ travelItem }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="flex flex-wrap items-center gap-3 text-slate-500 font-medium"
+              className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-slate-500 font-medium"
             >
               <div className="flex items-center gap-1 px-2 py-0.5 bg-slate-900 text-yellow-400 rounded-full text-[11px] font-bold shadow-lg shadow-black/10">
                 <Award size={12} />
@@ -133,27 +133,27 @@ const Header = ({ travelItem }) => {
               </div>
             </motion.div>
           </div>
-
+ 
           {/* Quick Contact Capsules */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6 }}
-            className="flex gap-2 md:pb-1"
+            className="flex gap-2 md:pb-1 w-full md:w-auto"
           >
             <a
               href={`tel:${travelItem.phone}`}
-              className="px-6 py-3 bg-slate-900 text-white rounded-full font-bold text-sm flex items-center gap-2 hover:bg-red-600 transition-all shadow-xl shadow-slate-200 active:scale-95"
+              className="flex-1 md:flex-none px-6 py-3 bg-slate-900 text-white rounded-full font-bold text-sm flex items-center justify-center gap-2 hover:bg-red-600 transition-all shadow-xl shadow-slate-200 active:scale-95"
             >
               <Phone size={16} />
               <span>Call Agent</span>
             </a>
           </motion.div>
         </div>
-
+ 
         {/* 3. Navigation & Description */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 py-4 border-t border-slate-100">
-          <nav className="flex flex-wrap gap-1.5">
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 py-4 border-t border-slate-100">
+          <nav className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-2 px-2">
             {[
               { label: "Overview", href: "#overview", show: true },
               { label: "Packages", href: "#packages", show: true },
@@ -167,18 +167,18 @@ const Header = ({ travelItem }) => {
                 whileHover={{ y: -2, backgroundColor: "#dc2626", color: "#ffffff" }}
                 key={idx}
                 href={nav.href}
-                className="px-4 py-2 rounded-full text-[12px] font-bold transition-all bg-slate-50 text-slate-600 border border-slate-100"
+                className="px-4 py-2 rounded-full text-[11px] font-bold transition-all bg-slate-50 text-slate-600 border border-slate-100 whitespace-nowrap"
               >
                 {nav.label}
               </motion.a>
             ))}
           </nav>
-
+ 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowModal(true)}
-            className="px-8 py-3 bg-premium-gradient text-white rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all shadow-xl shadow-red-200 active:scale-95"
+            className="w-full md:w-auto px-8 py-3 bg-premium-gradient text-white rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-black transition-all shadow-xl shadow-red-200 active:scale-95"
           >
             Enquire Today
           </motion.button>

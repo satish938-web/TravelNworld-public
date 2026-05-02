@@ -14,7 +14,7 @@ const TransportersList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/api/agents/public`);
+        const res = await axios.get(`${API_BASE}/api/agents/verified`);
         const agentsArray = res.data.data || [];
 
         const mapped = agentsArray.map((agent) => ({

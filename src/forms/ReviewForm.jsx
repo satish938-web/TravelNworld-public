@@ -92,13 +92,13 @@ const ReviewForm = ({ isOpen, onClose, rating, onSubmit, agentId}) => {
             imageKeys.push(key);
           }
 
-            if (onSubmit) {
-              await onSubmit({
-                rating: currentRating,
-                userName: guestName, // Passing guest name
+          if (onSubmit) {
+            await onSubmit({
+              rating: currentRating,
+              userName: guestName,
               tags: selectedTags,
               text: experienceText,
-              images: imageKeys, // Send S3 keys to parent
+              images: imageKeys,
             });
           }
 
@@ -114,6 +114,7 @@ const ReviewForm = ({ isOpen, onClose, rating, onSubmit, agentId}) => {
           setSelectedTags([]);
           setUploadedImages([]);
           setExperienceText('');
+          setGuestName('');
         } catch (error) {
           console.error("Review submission error:", error);
           Swal.fire({
@@ -216,6 +217,7 @@ const ReviewForm = ({ isOpen, onClose, rating, onSubmit, agentId}) => {
               className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
               value={experienceText}
               onChange={(e) => setExperienceText(e.target.value)}
+              required
             />
 
             <p className="mt-4 text-sm font-medium">Upload Photos (max 5)</p>

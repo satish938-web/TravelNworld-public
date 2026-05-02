@@ -55,8 +55,10 @@ function VerifiedReview({ travelItem, reviewsList = [] }) {
       
       setShowReviewForm(false);
     } catch (err) {
-      console.error("Failed to submit review:", err);
-      toast.error("Failed to submit review. Please try again.");
+      console.error("Failed to submit review:", err.response?.data || err.message);
+      const errorMsg = err.response?.data?.message || "Failed to submit review. Please try again.";
+      toast.error(errorMsg);
+      throw err; // Re-throw so ReviewForm doesn't show success modal
     }
   };
 

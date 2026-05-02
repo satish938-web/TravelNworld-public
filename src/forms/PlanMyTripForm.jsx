@@ -89,7 +89,7 @@ const purposeOptions = [
   "Pilgrimage", "Educational Tour", "Corporate Travel", "MICE Travel",
 ];
 
-const PlanMyTripForm = ({ onClose = () => {} }) => {
+const PlanMyTripForm = ({ onClose = () => { } }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -199,7 +199,7 @@ const PlanMyTripForm = ({ onClose = () => {} }) => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
+
     try {
       const submissionData = {
         name: formData.name.trim(),
@@ -219,17 +219,17 @@ const PlanMyTripForm = ({ onClose = () => {} }) => {
 
       // Simulate API call (replace with actual API call)
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      
+
       setSubmitSuccess(true);
-      
+
       // Show success message
       // alert("Trip plan submitted successfully! TravelnWorld will contact you soon.");
-      
+
       // Close form after 2 seconds
       setTimeout(() => {
         onClose();
       }, 2000);
-      
+
     } catch (error) {
       console.error("Form submission failed:", error);
       alert("There was an error submitting your form. Please try again.");
@@ -544,7 +544,7 @@ const PlanMyTripForm = ({ onClose = () => {} }) => {
           {/* Consultation */}
           <div>
             <label className="block text-[13px] font-medium text-gray-700 mb-2">
-              Need Free Consultation?
+              Need  Get a free consultation?
             </label>
             <div className="flex gap-4">
               <label className="inline-flex items-center">

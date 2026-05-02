@@ -28,19 +28,15 @@ const THEMES = [
 const CLASSIFICATIONS = ["Trending", "Exclusive", "Weekend", "Top Selling"];
 const TYPE_OPTIONS    = ["Flexible", "Fixed", "Group", "Customizable"];
 const VISIBILITY_OPTIONS = ["Public", "Private", "Draft"];
-const DEFAULT_CANCELLATION = `◆ Airfare/Train fare cancellation applied original booking refund policy
-◆ Before 30 days of cancellation: 100% refund of total booking amount
-◆ Between 15-30 days: 50% refund of total booking amount
-◆ Between 7-15 days: 25% refund of total booking amount
-◆ Less than 7 days: No refund`;
+const DEFAULT_CANCELLATION = "";
 
 /* ─── Global Styles ──────────────────────────────────────────────────────── */
 const GlobalStyle = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
     .ai-premium-container *, .ai-premium-container *::before, .ai-premium-container *::after {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Poppins', sans-serif;
       box-sizing: border-box;
     }
 
@@ -136,9 +132,9 @@ const PillToggle = ({ options, value, onChange }) => (
         style={{
           padding: "7px 20px", borderRadius: 8, fontSize: 13, fontWeight: 600,
           border: "none", cursor: "pointer", transition: "all .15s",
-          background: value === opt ? "white" : "transparent",
-          color:      value === opt ? "#dc2626" : "#9ca3af",
-          boxShadow:  value === opt ? "0 1px 6px rgba(0,0,0,.1)" : "none",
+          background: value === opt ? "#dc2626" : "transparent",
+          color:      value === opt ? "white" : "#9ca3af",
+          boxShadow:  value === opt ? "0 4px 12px rgba(220, 38, 38, 0.2)" : "none",
         }}
       >
         {opt}
@@ -390,22 +386,7 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
     <div className="ai-premium-container">
       <GlobalStyle />
       <div className="ai-fade-in" style={{ minHeight: isModal ? "auto" : "100vh", background: isModal ? "transparent" : "#f4f4f5", paddingBottom: 40 }}>
-        {!isModal && (
-          <header style={{ position: "relative", overflow: "hidden", background: "linear-gradient(135deg,#1e0a0a 0%,#7f1d1d 50%,#b91c1c 100%)", borderRadius: "0 0 30px 30px" }}>
-            <div style={{ position: "relative", maxWidth: 896, margin: "0 auto", padding: "40px 24px" }}>
-              <div>
-                <p style={{ color: "#fca5a5", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>Agent Dashboard</p>
-                <h1 style={{ color: "white", fontSize: 32, fontWeight: 800, lineHeight: 1.2, margin: "0 0 4px" }}>{isEditMode ? "Edit Itinerary" : "Create New Itinerary"}</h1>
-                <div style={{ marginTop: 24, display: "flex", alignItems: "center", gap: 16, maxWidth: 360 }}>
-                  <div className="ai-progress-bar" style={{ flex: 1 }}><div className="ai-progress-fill" style={{ width: `${(completedSections / 5) * 100}%` }} /></div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#fca5a5" }}>{completedSections} / 5 sections</span>
-                </div>
-              </div>
-            </div>
-          </header>
-        )}
-
-        <div style={{ maxWidth: 896, margin: isModal ? "0 auto" : "-20px auto 0", padding: "0 16px", display: "flex", flexDirection: "column", gap: 20 }}>
+        <div style={{ maxWidth: 896, margin: "0 auto", padding: "40px 16px", display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 16 }}>
             <StatCard label="Domestic" value={domesticDestinations.length} color="#2563eb" />
             <StatCard label="International" value={internationalDestinations.length} color="#d97706" />
@@ -489,12 +470,14 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
             {!asBestQuote && (
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 15 }}>
                 <div>
-                  <FieldLabel icon={HiOutlineCurrencyRupee}>Standard Price</FieldLabel>
+                  <FieldLabel icon={HiOutlineCurrencyRupee}>Standard Price (₹)</FieldLabel>
                   <input type="number" className="ai-input" placeholder="0.00" value={standardPrice} onChange={e => setStandardPrice(e.target.value)} />
+                  <p style={{ fontSize: 10, color: "#9ca3af", marginTop: 4 }}>Original price before discount.</p>
                 </div>
                 <div>
-                  <FieldLabel icon={HiOutlineTag}>Discounted Price</FieldLabel>
+                  <FieldLabel icon={HiOutlineTag}>Discounted Price (₹)</FieldLabel>
                   <input type="number" className="ai-input" placeholder="0.00" value={discountedPrice} onChange={e => setDiscountedPrice(e.target.value)} />
+                  <p style={{ fontSize: 10, color: "#9ca3af", marginTop: 4 }}>Final price for the customer.</p>
                 </div>
               </div>
             )}

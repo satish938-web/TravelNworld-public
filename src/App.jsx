@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import MainLayout from './MainLayout';
-import AdminLayout from './components/admin/AdminLayout';
+import AgentLayout from './components/agent/AgentLayout';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
 import FreeAgents from './pages/FreeAgents.jsx';
@@ -40,23 +40,23 @@ import HotelDetailsPage from './components/verifiedHotel/HotelDetailsPage.jsx';
 import HotelVerifiedReviewViewAll from './components/HotelDetailsPage/HotelVerifiedReviewViewAll.jsx';
 import HotelTourPackagesViewAll from './components/HotelDetailsPage/HotelTourPackagesViewAll.jsx';
 // admin pages
-// import AdminDashboard from './pages/admin/AdminDashboard';
-// import AdminUsers from './pages/admin/AdminUsers';
-import AdminPannel from './components/admin/AdminPannel';
-import MyLeads from './components/admin/MyLeads/MyLeads';
-import Profile from './components/admin/MyAccount/Profile';
-import AdditionalInfo from './components/admin/MyAccount/AdditionalInfo';
-import ResetPassword from './components/admin/MyAccount/ResetPassword';
-import MyItineraries from './components/admin/MyItineraries/MyItineraries';
-import AddItinerariesPremium from './components/admin/MyItineraries/AddItinerariesPremium';
-import ItineraryDetail from './components/admin/MyItineraries/ItineraryDetail';
-import ItineraryParticularCard from './components/admin/MyItineraries/ItineraryParticularCard.jsx';
-import ItineraryCard from './components/admin/MyItineraries/ItineraryCard.jsx';
-import BuyLeads from './components/admin/BuyLeads.jsx';
-import MyReports from './components/admin/MyReports.jsx';
-import MyReviews from './components/admin/MyReviews.jsx';
-import HeroVideoManagement from './components/admin/HeroVideoManagement.jsx';
-import MyTeam from './components/admin/MyTeam.jsx';
+// import AdminDashboard from './pages/agent/AdminDashboard';
+// import AdminUsers from './pages/agent/AdminUsers';
+import AgentPanel from './components/agent/AgentPanel';
+import MyLeads from './components/agent/MyLeads/MyLeads';
+import Profile from './components/agent/MyAccount/Profile';
+import AdditionalInfo from './components/agent/MyAccount/AdditionalInfo';
+import ResetPassword from './components/agent/MyAccount/ResetPassword';
+import MyItineraries from './components/agent/MyItineraries/MyItineraries';
+import AddItinerariesPremium from './components/agent/MyItineraries/AddItinerariesPremium';
+import ItineraryDetail from './components/agent/MyItineraries/ItineraryDetail';
+import ItineraryParticularCard from './components/agent/MyItineraries/ItineraryParticularCard.jsx';
+import ItineraryCard from './components/agent/MyItineraries/ItineraryCard.jsx';
+import BuyLeads from './components/agent/BuyLeads.jsx';
+import MyReports from './components/agent/MyReports.jsx';
+import MyReviews from './components/agent/MyReviews.jsx';
+import HeroVideoManagement from './components/agent/HeroVideoManagement.jsx';
+import MyTeam from './components/agent/MyTeam.jsx';
 import B2BSignup from './pages/B2BSignup.jsx';
 import ProfileGuard from "./components/ProfileGuard";
 import ProtectedRoute from './components/ProtectedRoute';
@@ -114,11 +114,11 @@ const App = () => {
           <Route path='/agent-blog/:id/:blogIndex' element={<AgentBlogDetail />} />
           {/* Outer Pages */}
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/Terms-to-use" element={<TermsAndConditions />} />
+            <Route path="/terms-of-use" element={<TermsAndConditions />} />
         </Route>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/agent" element={<AgentLayout />}>
           <Route element={<ProfileGuard><Outlet /></ProfileGuard>}>
-            <Route index element={<AdminPannel />} />
+            <Route index element={<AgentPanel />} />
             <Route path="my-leads" element={<MyLeads />} />
             <Route path="buy-leads" element={<BuyLeads />} />
             <Route path="report" element={<MyReports />} />

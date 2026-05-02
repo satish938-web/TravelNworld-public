@@ -1,7 +1,9 @@
-import { Navigate, useLocation } from "react-router-dom";
+import React from "react";
+import { Navigate, useLocation, useOutletContext } from "react-router-dom";
 
 const ProfileGuard = ({ children }) => {
   const location = useLocation();
+  const context = useOutletContext();
   const token = localStorage.getItem("token");
   const expiry = localStorage.getItem("tokenExpiry");
   const isProfileComplete = localStorage.getItem("isProfileComplete");
@@ -12,10 +14,15 @@ const ProfileGuard = ({ children }) => {
   }
 
   if (isProfileComplete !== "true") {
-    return <Navigate to="/admin/profile" state={{ from: location }} replace />;
+    return <Navigate to="/agent/profile" state={{ from: location }} replace />;
   }
 
-  return children;
+  return React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, { context });
+    }
+    return child;
+  });
 };
 
 

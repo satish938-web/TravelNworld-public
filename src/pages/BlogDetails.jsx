@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API_BASE } from '../utils/api';
 import ShareButton from '../components/blogs/ShareButton';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaArrowLeft } from 'react-icons/fa';
-import logo from '../assets/images/logo/logo.jpeg';
+import logo from '../assets/images/logo/logo.png';
 
 const BlogDetails = () => {
   const { slug } = useParams();

@@ -13,7 +13,7 @@ const ItineraryCard = ({ destination, onEdit, onDelete, onTogglePublic, showActi
   }
 
   const handleCardClick = () => {
-    if (destination.slug) navigate(`/admin/destinations/${destination.slug}`, { state: { destination } });
+    if (destination.slug) navigate(`/agent/destinations/${destination.slug}`, { state: { destination } });
   };
 
   const firstImage =

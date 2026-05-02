@@ -5,7 +5,7 @@ export const API_BASE = (rawApiBase && rawApiBase !== "undefined" && rawApiBase 
 
 export const USE_BACKEND = Boolean(API_BASE);
 
-export const S3_BASE_URL = "https://travel-n-wolrd.s3.ap-south-1.amazonaws.com";
+export const S3_BASE_URL = "https://media.travelnworld.com";
 
 /**
  * Transforms an S3 key into a full URL if it's not already an absolute URL.

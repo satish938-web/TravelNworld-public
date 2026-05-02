@@ -157,7 +157,7 @@ const EnquiryForm = ({ variant = "transparent" }) => {
               marginBottom: 4,
             }}
           >
-            Free Consultation
+            Get a free consultation
           </p>
           <h3
             style={{
@@ -169,7 +169,7 @@ const EnquiryForm = ({ variant = "transparent" }) => {
               marginBottom: 0,
             }}
           >
-            Plan Your Dream Trip
+            Join with us as a member
           </h3>
           <div
             style={{

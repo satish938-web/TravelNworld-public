@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
+  LayoutDashboard,
   ShoppingCart,
   List,
   FileText,
@@ -18,6 +19,7 @@ const LeftSidebar = () => {
 
   const role = localStorage.getItem("role");
   const menuItems = [
+    { path: "/agent", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { path: "buy-leads", label: "Buy Leads", icon: <ShoppingCart size={18} /> },
     { path: "my-leads", label: "My Leads", icon: <List size={18} /> },
     ...(role === "SUPERADMIN" ? [{ path: "hero-videos", label: "Hero Videos", icon: <Film size={18} /> }] : []),
@@ -61,29 +63,42 @@ const LeftSidebar = () => {
   };
 
   return (
-    <nav className="flex flex-col mt-4 md:mt-6">
+    <nav className="flex flex-col space-y-1.5 px-4 pt-4">
       {menuItems.map((item) => (
         <NavLink
           key={item.path}
           to={isProfileComplete ? item.path : "#"}
           onClick={handleRestrictedClick}
           className={({ isActive }) =>
-            `flex items-center gap-3 px-4 md:px-6 py-2 text-sm font-medium rounded-md transition-colors duration-200
-             ${!isProfileComplete ? "opacity-50 cursor-not-allowed" : ""}
+            `flex items-center gap-4 px-5 py-3.5 text-sm font-bold rounded-xl transition-all duration-300 group relative
+             ${!isProfileComplete ? "opacity-30 cursor-not-allowed grayscale" : ""}
              ${
                isActive && isProfileComplete
-                 ? "bg-indigo-500 text-indigo-900"
-                 : "hover:bg-indigo-700 hover:bg-opacity-80 text-white"
+                 ? "bg-red-50 text-red-600"
+                 : "text-slate-500 hover:text-red-600 hover:bg-slate-50"
              }`
           }
         >
-          {item.icon}
-          {item.label}
+          {({ isActive }) => (
+            <>
+              {isActive && isProfileComplete && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-red-600 rounded-r-full" />
+              )}
+              <span className={`transition-transform duration-300 group-hover:scale-110 ${isActive ? 'text-red-600' : 'text-slate-400 group-hover:text-red-600'}`}>
+                {item.icon}
+              </span>
+              <span className="tracking-wide">{item.label}</span>
+            </>
+          )}
         </NavLink>
       ))}
 
-      {/* My Itinary with Dropdown */}
-      <div>
+      <div className="mt-8 mb-4 px-5">
+        <div className="h-px bg-slate-100 w-full" />
+      </div>
+
+      {/* My Itinerary with Dropdown */}
+      <div className="space-y-1.5">
         <button
           onClick={(e) => {
             if (!isProfileComplete) {
@@ -92,34 +107,36 @@ const LeftSidebar = () => {
             }
             setItinerariesOpen((prev) => !prev);
           }}
-          className={`flex items-center justify-between w-full px-4 md:px-6 py-2 text-sm font-medium rounded-md text-white transition-colors duration-200 ${
-            !isProfileComplete ? "opacity-50 cursor-not-allowed" : "hover:bg-indigo-700"
-          }`}
+          className={`flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold rounded-xl transition-all duration-300 group
+            ${!isProfileComplete ? "opacity-30 cursor-not-allowed grayscale" : "text-slate-500 hover:text-red-600 hover:bg-slate-50"}
+            ${itinerariesOpen ? "text-red-600 bg-red-50/50" : ""}`}
         >
-          <span className="flex items-center gap-3">
-            <FileText size={18} />
-            My Itineraries
+          <span className="flex items-center gap-4">
+            <span className={`group-hover:scale-110 transition-transform duration-300 ${itinerariesOpen ? 'text-red-600' : 'text-slate-400'}`}>
+              <FileText size={18} />
+            </span>
+            <span className="tracking-wide">Packages</span>
           </span>
           <ChevronDown
             size={16}
-            className={`transition-transform duration-200 ${
-              itinerariesOpen ? "rotate-180" : ""
+            className={`transition-transform duration-500 ${
+              itinerariesOpen ? "rotate-180 text-red-600" : "text-slate-400"
             }`}
           />
         </button>
 
         {itinerariesOpen && (
-          <div className="ml-6 md:ml-10 mt-1 flex flex-col space-y-1">
+          <div className="ml-9 mt-1 flex flex-col space-y-1 border-l border-slate-100 pl-4 py-1">
             {myItianarySubItems.map((sub) => (
               <NavLink
                 key={sub.path}
                 to={sub.path}
                 className={({ isActive }) =>
-                  `px-3 md:px-4 py-1 text-sm rounded-md transition-colors duration-200
+                  `px-4 py-2.5 text-xs font-bold rounded-lg transition-all duration-300
                    ${
                      isActive
-                       ? "bg-indigo-500 text-indigo-900"
-                       : "hover:bg-indigo-700 hover:bg-opacity-80 text-white"
+                       ? "text-red-600 bg-red-50"
+                       : "text-slate-500 hover:text-red-600 hover:bg-slate-50"
                    }`
                 }
               >
@@ -131,35 +148,39 @@ const LeftSidebar = () => {
       </div>
 
       {/* My Account with Dropdown */}
-      <div>
+      <div className="space-y-1.5">
         <button
           onClick={() => setAccountOpen((prev) => !prev)}
-          className="flex items-center justify-between w-full px-4 md:px-6 py-2 text-sm font-medium rounded-md text-white hover:bg-indigo-700 transition-colors duration-200"
+          className={`flex items-center justify-between w-full px-5 py-3.5 text-sm font-bold rounded-xl transition-all duration-300 group
+            text-slate-500 hover:text-red-600 hover:bg-slate-50
+            ${accountOpen ? "text-red-600 bg-red-50/50" : ""}`}
         >
-          <span className="flex items-center gap-3">
-            <User size={18} />
-            My Account
+          <span className="flex items-center gap-4">
+            <span className={`group-hover:scale-110 transition-transform duration-300 ${accountOpen ? 'text-red-600' : 'text-slate-400'}`}>
+              <User size={18} />
+            </span>
+            <span className="tracking-wide">Settings</span>
           </span>
           <ChevronDown
             size={16}
-            className={`transition-transform duration-200 ${
-              accountOpen ? "rotate-180" : ""
+            className={`transition-transform duration-500 ${
+              accountOpen ? "rotate-180 text-red-600" : "text-slate-400"
             }`}
           />
         </button>
 
         {accountOpen && (
-          <div className="ml-6 md:ml-10 mt-1 flex flex-col space-y-1">
+          <div className="ml-9 mt-1 flex flex-col space-y-1 border-l border-slate-100 pl-4 py-1">
             {accountSubItems.map((sub) => (
               <NavLink
                 key={sub.path}
                 to={sub.path}
                 className={({ isActive }) =>
-                  `px-3 md:px-4 py-1 text-sm rounded-md transition-colors duration-200
+                  `px-4 py-2.5 text-xs font-bold rounded-lg transition-all duration-300
                    ${
                      isActive
-                       ? "bg-indigo-500 text-indigo-900"
-                       : "hover:bg-indigo-700 hover:bg-opacity-80 text-white"
+                       ? "text-red-600 bg-red-50"
+                       : "text-slate-500 hover:text-red-600 hover:bg-slate-50"
                    }`
                 }
               >

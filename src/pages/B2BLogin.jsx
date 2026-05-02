@@ -36,9 +36,9 @@ const B2BLogin = () => {
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
       if (!response.data.user.isProfileComplete) {
-        navigate("/admin/profile");
+        navigate("/agent/profile");
       } else {
-        navigate("/admin/");
+        navigate("/agent/");
       }
     } catch (error) {
       setErrors({
@@ -59,9 +59,9 @@ const B2BLogin = () => {
       navigate("/superadmin/dashboard");
     } else if (role === "AGENT" || role === "ADMIN") {
  if (isProfileComplete === "true") {
-      navigate("/admin/");
+      navigate("/agent/");
     } else {
-      navigate("/admin/profile");
+      navigate("/agent/profile");
     }
   }
   }else {
@@ -158,9 +158,9 @@ const B2BLogin = () => {
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
             if (!response.data.user.isProfileComplete) {
-              navigate("/admin/profile");
+              navigate("/agent/profile");
             } else {
-              navigate("/admin/");
+              navigate("/agent/");
             }
               }
             } catch (error) {

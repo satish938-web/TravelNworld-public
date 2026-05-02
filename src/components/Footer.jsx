@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import logo from '../assets/images/logo/logo.png';
 const Footer = () => {
   const [email, setEmail] = useState('');
 
@@ -52,9 +53,9 @@ const Footer = () => {
         
         {/* Brand Column */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-black tracking-tighter uppercase italic">
-            Travel<span className="text-red-500">N</span>World
-          </h2>
+          <Link to="/" className="inline-block transform hover:-translate-y-1 transition-transform">
+            <img src={logo} alt="TravelNWorld Logo" className="h-16 w-auto object-contain" />
+          </Link>
           <p className="text-gray-400 leading-relaxed">
             Crafting luxury travel experiences for the discerning explorer. 
             Join our elite community and discover the world's most secret escapes.
@@ -91,19 +92,21 @@ const Footer = () => {
             <li><Link to="/aboutUs" className="hover:text-red-500 transition-colors">Our Story</Link></li>
             <li><Link to="/contactUs" className="hover:text-red-500 transition-colors">Contact Support</Link></li>
             <li><Link to="/privacy-policy" className="hover:text-red-500 transition-colors">Privacy Policy</Link></li>
-            <li><Link to="/Terms-to-use" className="hover:text-red-500 transition-colors">Terms of Use</Link></li>
+            <li><Link to="/terms-of-use" className="hover:text-red-500 transition-colors">Terms of Use</Link></li>
           </ul>
         </div>
 
         {/* Newsletter Column */}
         <div className="space-y-6">
-          <h3 className="text-red-500 font-black uppercase tracking-widest text-[10px] mb-6">Join Our Elite List</h3>
-          
-          {/* Login | Sign Up links */}
-          <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest">
-            <Link to="/b2blogin" className="hover:text-red-500 transition">Login</Link>
-            <span className="w-1 h-1 bg-red-600 rounded-full"></span>
-            <Link to="/b2bSignup" className="hover:text-red-500 transition">Sign Up</Link>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h3 className="text-red-500 font-black uppercase tracking-widest text-[10px]">Join Our Elite List</h3>
+            
+            {/* Login | Sign Up links */}
+            <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest">
+              <Link to="/b2blogin" className="hover:text-red-500 transition">Login</Link>
+              <span className="w-1 h-1 bg-red-600 rounded-full"></span>
+              <Link to="/b2bSignup" className="hover:text-red-500 transition">Sign Up</Link>
+            </div>
           </div>
 
           <form onSubmit={handleSubscribe} className="space-y-4">
@@ -130,11 +133,12 @@ const Footer = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="max-w-7xl mx-auto border-t border-white/10 mt-20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
-        <p>© {new Date().getFullYear()} TravelNWorld. Designed for Legends.</p>
-        <p className="flex items-center gap-2">
-          Made with <span className="text-red-600 animate-pulse text-xs">❤</span> for travelers.
-        </p>
+      <div className="max-w-7xl mx-auto border-t border-white/10 mt-20 pt-10 flex flex-row justify-between items-center gap-6 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500">
+        <p>© {new Date().getFullYear()} TravelNWorld. All Rights Reserved.</p>
+        <div className="flex gap-6">
+          <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link to="/terms-of-use" className="hover:text-white transition-colors">Terms of Service</Link>
+        </div>
       </div>
     </footer>
   );
