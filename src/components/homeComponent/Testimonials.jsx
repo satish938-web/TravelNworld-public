@@ -46,13 +46,14 @@ const TestimonialCard = ({ image, name, role, text, stars = 5, type, videoUrl, l
         position: "relative",
         width: 360,
         flexShrink: 0,
-        margin: "0 12px",
+        margin: "0 20px",
+        zIndex: hovered ? 10 : 1,
         background: hovered ? "linear-gradient(145deg, #0f0f0f 0%, #1a0505 100%)" : "#fff",
         borderRadius: "28px",
         padding: "32px",
         boxShadow: hovered
-          ? "0 30px 80px rgba(220,38,38,0.2), 0 0 0 1px rgba(220,38,38,0.25)"
-          : "0 8px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)",
+          ? "0 30px 80px rgba(220,38,38,0.25), 0 0 0 1px rgba(220,38,38,0.35)"
+          : "0 8px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
         transform: hovered ? "translateY(-10px) scale(1.02)" : "translateY(0) scale(1)",
         transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
         overflow: "hidden",
@@ -227,7 +228,7 @@ const Testimonials = () => {
       setSlideKey(k => k + 1);
       pause(); resume(3000);
     } else {
-      const amt = dir === "next" ? 384 : -384; // Card (360) + Margin (12*2)
+      const amt = dir === "next" ? 400 : -400; // Card (360) + Margin (20*2)
       if (scrollRef1.current) scrollRef1.current.scrollBy({ left: amt, behavior: "smooth" });
       if (scrollRef2.current) scrollRef2.current.scrollBy({ left: -amt, behavior: "smooth" });
       pause(); resume();

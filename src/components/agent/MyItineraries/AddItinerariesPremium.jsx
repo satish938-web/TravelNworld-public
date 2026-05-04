@@ -11,7 +11,7 @@ import {
 import MediaUploader from "../MyAccount/MediaUploader";
 import { getS3Path } from "../../../utils/pathUtils";
 import { API_BASE } from "../../../utils/api";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 
 /* ─── Constants ─────────────────────────────────────────────────────────── */
 const DURATION_OPTIONS = [
@@ -209,9 +209,10 @@ const StatCard = ({ label, value, color }) => (
 
 const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const context = useOutletContext() || {};
   const { refreshItineraries } = context;
-  const isEditMode = Boolean(initialData?.slug);
+  const [isEditMode, setIsEditMode] = useState(Boolean(initialData?.slug || id));
 
   const [domesticDestinations,       setDomesticDestinations]       = useState([]);
   const [internationalDestinations,  setInternationalDestinations]  = useState([]);
@@ -287,10 +288,48 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
     }
   }, [getAuthToken]);
 
+  const fetchItineraryForEdit = useCallback(async () => {
+    if (!id) return;
+    try {
+      const token = getAuthToken();
+      const res = await axios.get(`${API_BASE}/api/agent-itineraries/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data.data;
+      if (data) {
+        setTitle(data.title || "");
+        setTravelType(data.type === "domestic" ? "Domestic" : "International");
+        setDestination(data.destination || "");
+        setDuration(data.duration || "");
+        setThemes(data.themes || []);
+        setClassification(data.classification || []);
+        setPackageType(data.packageType || "Flexible");
+        setVisibility(data.visibility || "Public");
+        setDestinationDetail(data.destinationDetail || "");
+        setMediaUrls(data.gallery || []);
+        setDays((data.dayPlans || []).map((d, i) => ({ id: Date.now() + i, ...d })));
+        setInclusions(Array.isArray(data.inclusions) ? data.inclusions.join(", ") : (data.inclusions || ""));
+        setExclusions(Array.isArray(data.exclusions) ? data.exclusions.join(", ") : (data.exclusions || ""));
+        setAsPerCategory(data.asPerCategory || false);
+        setAsBestQuote(data.asBestQuote || false);
+        setStandardPrice(data.priceFrom || "");
+        setDiscountedPrice(data.discountedPrice || "");
+        setTermsConditions(data.termsConditions || "");
+        setPaymentMode(data.paymentMode || "");
+        setCancellationPolicy(data.cancellationPolicy || DEFAULT_CANCELLATION);
+        setIsEditMode(true);
+      }
+    } catch (err) {
+      console.error("Error fetching itinerary for edit", err);
+      setSubmitError("Failed to load itinerary for editing.");
+    }
+  }, [id, getAuthToken]);
+
   useEffect(() => {
     fetchProfile();
     fetchDestinations();
-  }, [fetchProfile, fetchDestinations]);
+    if (id) fetchItineraryForEdit();
+  }, [fetchProfile, fetchDestinations, fetchItineraryForEdit, id]);
 
   const handleTravelTypeChange = (type) => {
     setTravelType(type);
@@ -346,8 +385,7 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
 
       let response;
       if (isEditMode) {
-        // Use id or slug for update
-        const idOrSlug = initialData._id || initialData.id || initialData.slug;
+        const idOrSlug = id || initialData?._id || initialData?.id || initialData?.slug;
         const editEndpoint = `${API_BASE}/api/agent-itineraries/${idOrSlug}`;
         response = await axios.put(editEndpoint, payload, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -564,7 +602,7 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
             onMouseOver={e => e.currentTarget.style.transform = "translateY(-2px)"}
             onMouseOut={e => e.currentTarget.style.transform = "none"}
           >
-            {submitLoading ? "Publishing Itinerary..." : "Publish Itinerary Now"}
+            {submitLoading ? (isEditMode ? "Updating Itinerary..." : "Publishing Itinerary...") : (isEditMode ? "Update Itinerary Now" : "Publish Itinerary Now")}
           </button>
         </div>
       </div>

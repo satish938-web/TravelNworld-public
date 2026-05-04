@@ -313,8 +313,8 @@ const VerifiedTransportDetails = () => {
                         );
                       }
 
-                      // Always duplicate for infinite marquee effect
-                      const marqueeItems = [...displayBlogs, ...displayBlogs];
+                      // Only duplicate if we have very few items to ensure smooth marquee
+                      const marqueeItems = displayBlogs.length > 3 ? displayBlogs : [...displayBlogs, ...displayBlogs, ...displayBlogs];
 
                       return (
                         <div className="flex animate-marquee hover:[animation-play-state:paused] whitespace-nowrap gap-6 py-4">
@@ -344,9 +344,7 @@ const VerifiedTransportDetails = () => {
                                 <h3 className="text-sm font-black text-slate-900 mb-2 truncate group-hover:text-red-600 transition-colors">
                                   {blog.title || "Latest Travel Story"}
                                 </h3>
-                                <p className="text-[11px] text-slate-500 font-medium leading-relaxed line-clamp-2 mb-3 whitespace-normal">
-                                  {blog.content?.replace(/<[^>]*>/g, '') || "Explore amazing destinations..."}
-                                </p>
+
                                 <span className="text-[9px] font-bold text-red-600 flex items-center gap-1">
                                   Read Full Story →
                                 </span>

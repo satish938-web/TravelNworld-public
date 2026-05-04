@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import { getImageUrl, API_BASE } from "../../utils/api";
 
 const MiddleBanner = () => {
   const [banners, setBanners] = useState([]);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [selectedImg, setSelectedImg] = useState(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentOffset(prev => prev + 1);
+    }, 4000); // 4 seconds per slide
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     axios
@@ -27,143 +37,121 @@ const MiddleBanner = () => {
       <div style={{ ...styles.orb, ...styles.orb3 }} />
       <div style={styles.scanlines} />
 
-      {/* Single Marquee Row */}
-      <div style={styles.rowWrap}>
-        <div className="track track-left">
-          {loopBanners.map((banner, i) => (
-            <div
-              key={`l-${i}`}
-              className={`bcard delay-${i % 4}`}
-              onClick={() => banner.link && window.open(banner.link, "_blank")}
-            >
-              {/* Shine sweep */}
-              <div style={styles.shine} className="shine" />
+      {/* Triple Slide Carousel with Controls */}
+      <div style={styles.carouselContainer}>
+        <button 
+          onClick={() => setCurrentOffset(prev => prev - 1)}
+          style={{ ...styles.navBtn, left: "30px" }}
+          className="nav-btn-hover"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
 
-              {/* Image */}
-              <img src={getImageUrl(banner.imageUrl)} alt={banner.title || "banner"} style={styles.image} />
+        <button 
+          onClick={() => setCurrentOffset(prev => prev + 1)}
+          style={{ ...styles.navBtn, right: "30px" }}
+          className="nav-btn-hover"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
 
-              {/* Bottom red glow */}
-              <div style={styles.cardGlow} />
-            </div>
+        <div style={styles.tripleGrid}>
+          <AnimatePresence mode="popLayout" initial={false}>
+            {(() => {
+              // Take 3 banners at a time for desktop
+              const b1 = banners[(currentOffset % banners.length + banners.length) % banners.length];
+              const b2 = banners[((currentOffset + 1) % banners.length + banners.length) % banners.length];
+              const b3 = banners[((currentOffset + 2) % banners.length + banners.length) % banners.length];
+              
+              let trio = [];
+              if (banners.length >= 3) trio = [b1, b2, b3];
+              else if (banners.length === 2) trio = [b1, b2];
+              else trio = [b1];
+
+              return trio.map((banner, idx) => {
+                if (!banner) return null;
+                const isVideo = banner.imageUrl?.toLowerCase().endsWith('.mp4') || banner.imageUrl?.toLowerCase().endsWith('.webm');
+
+                return (
+                  <motion.div
+                    key={`banner-${banner._id}-${idx}`}
+                    layout
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.6, ease: "circOut" }}
+                    style={styles.tripleBannerCard}
+                    onClick={() => setSelectedImg(banner)}
+                  >
+                    {isVideo ? (
+                      <video src={getImageUrl(banner.imageUrl)} autoPlay muted loop playsInline style={styles.image} />
+                    ) : (
+                      <img src={getImageUrl(banner.imageUrl)} alt={banner.title} style={styles.image} />
+                    )}
+                    <div style={styles.cardGlow} />
+                  </motion.div>
+                );
+              });
+            })()}
+          </AnimatePresence>
+        </div>
+
+        {/* Progress Bar Indicators */}
+        <div style={styles.indicatorWrap}>
+          {banners.map((_, i) => (
+            <div 
+              key={i} 
+              style={{
+                ...styles.indicatorDot,
+                background: (currentOffset % banners.length) === i ? "#dc2626" : "rgba(255,255,255,0.2)",
+                width: (currentOffset % banners.length) === i ? "30px" : "8px"
+              }}
+            />
           ))}
         </div>
       </div>
 
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImg && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImg(null)}
+            style={styles.lightboxOverlay}
+          >
+            <motion.button 
+              style={styles.closeBtn}
+              onClick={() => setSelectedImg(null)}
+            >
+              ✕
+            </motion.button>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              style={styles.lightboxContent}
+            >
+              {selectedImg.imageUrl?.toLowerCase().endsWith('.mp4') || selectedImg.imageUrl?.toLowerCase().endsWith('.webm') ? (
+                <video src={getImageUrl(selectedImg.imageUrl)} autoPlay muted loop playsInline style={styles.fullImg} />
+              ) : (
+                <img src={getImageUrl(selectedImg.imageUrl)} alt="Full View" style={styles.fullImg} />
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-
-        .track {
-          display: flex;
-          width: max-content;
-          gap: 14px;
-          padding: 0 16px;
+        .nav-btn-hover {
+          transition: all 0.3s ease;
         }
-        .track-left  { animation: goLeft 30s linear infinite; }
-        .track-left:hover { animation-play-state: paused; }
-
-        @keyframes goLeft {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-25%); }
-        }
-
-        .bcard {
-          position: relative;
-          min-width: 400px;
-          height: 180px;
-          border-radius: 16px;
-          flex-shrink: 0;
-          cursor: pointer;
-          overflow: hidden;
-          border: 1px solid rgba(220,38,38,0.25);
-          box-shadow:
-            0 0 0 1px rgba(220,38,38,0.08),
-            0 8px 32px rgba(0,0,0,0.55);
-          transition:
-            transform 0.45s cubic-bezier(0.34,1.56,0.64,1),
-            box-shadow 0.45s ease,
-            border-color 0.3s;
-          animation: floatUp 5s ease-in-out infinite;
-          font-family: 'Outfit', sans-serif;
-        }
-
-        @media (max-width: 768px) {
-          .bcard {
-            min-width: 300px;
-            height: 140px;
-          }
-          .header-line-mob {
-            display: none !important;
-          }
-          .header-wrap-mob {
-            flex-direction: column;
-            gap: 10px;
-            text-align: center;
-          }
-        }
-
-        .delay-0 { animation-delay: 0s; }
-        .delay-1 { animation-delay: 1.2s; }
-        .delay-2 { animation-delay: 2.4s; }
-        .delay-3 { animation-delay: 3.6s; }
-
-        @keyframes floatUp {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50%       { transform: translateY(-7px) rotate(0.3deg); }
-        }
-
-        .bcard:hover {
-          transform: translateY(-14px) scale(1.05) rotate(-0.4deg) !important;
-          border-color: rgba(220,38,38,0.85);
-          box-shadow:
-            0 0 28px rgba(220,38,38,0.4),
-            0 0 55px rgba(220,38,38,0.15),
-            0 22px 50px rgba(0,0,0,0.65),
-            inset 0 0 18px rgba(220,38,38,0.07);
-          z-index: 10;
-        }
-
-        .bcard:hover img {
-          transform: scale(1.1);
-        }
-
-        .bcard:hover .shine {
-          transform: translateX(200%) skewX(-15deg);
-          transition: transform 0.75s ease;
-        }
-
-        .bcard::after {
-          content: '';
-          position: absolute;
-          inset: -2px;
-          border-radius: 18px;
-          border: 2px solid rgba(220,38,38,0);
-          transition: border-color 0.3s, box-shadow 0.3s;
-          pointer-events: none;
-          z-index: 10;
-        }
-        .bcard:hover::after {
-          border-color: rgba(220,38,38,0.65);
-          box-shadow: 0 0 18px rgba(220,38,38,0.35);
-          animation: pulseBorder 1.3s ease-in-out infinite;
-        }
-
-        @keyframes pulseBorder {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.45; }
-        }
-
-        @keyframes orbPulse {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50%       { opacity: 1; transform: scale(1.15); }
-        }
-        @keyframes orbDrift {
-          0%, 100% { transform: translate(0,0) scale(1); }
-          33%       { transform: translate(30px,-20px) scale(1.1); }
-          66%       { transform: translate(-20px,15px) scale(0.95); }
-        }
-        @keyframes flicker {
-          0%, 100% { opacity: 0.03; }
-          50%       { opacity: 0.06; }
+        .nav-btn-hover:hover {
+          background: rgba(220, 38, 38, 0.9) !important;
+          transform: translateY(-50%) scale(1.1) !important;
+          box-shadow: 0 0 20px rgba(220, 38, 38, 0.5) !important;
         }
       `}</style>
     </div>
@@ -175,8 +163,8 @@ const styles = {
     position: "relative",
     overflow: "hidden",
     width: "100%",
-    padding: "30px 0 36px",
-    margin: "40px 0",
+    padding: "0",
+    margin: "20px 0",
     display: "flex",
     flexDirection: "column",
     gap: "0px",
@@ -294,11 +282,59 @@ const styles = {
   },
 
   // ── Row ──
-  rowWrap: {
+  carouselContainer: {
     position: "relative",
     zIndex: 5,
+    width: "100%",
+    margin: "0 auto",
+    height: "280px",
+    padding: "0",
+  },
+  navBtn: {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: "44px",
+    height: "44px",
+    borderRadius: "50%",
+    background: "rgba(0,0,0,0.4)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    zIndex: 20,
+    backdropFilter: "blur(8px)",
+  },
+  tripleGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "0px",
+    width: "100%",
+    height: "100%",
+  },
+  tripleBannerCard: {
+    position: "relative",
+    width: "100%",
+    height: "100%",
+    borderRadius: "0px",
     overflow: "hidden",
-    padding: "6px 0",
+    cursor: "pointer",
+    border: "none",
+  },
+  indicatorWrap: {
+    position: "absolute",
+    bottom: "30px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    display: "flex",
+    gap: "8px",
+    zIndex: 10,
+  },
+  indicatorDot: {
+    height: "8px",
+    borderRadius: "10px",
+    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
   },
 
   // ── Card internals ──
@@ -420,6 +456,50 @@ const styles = {
     color: "rgba(255,255,255,0.45)",
     fontSize: "9.5px",
     fontFamily: "'Outfit', sans-serif",
+  },
+  lightboxOverlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.92)",
+    zIndex: 9999,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    backdropFilter: "blur(10px)",
+    padding: "20px",
+  },
+  lightboxContent: {
+    position: "relative",
+    maxWidth: "95%",
+    maxHeight: "95%",
+    borderRadius: "24px",
+    overflow: "hidden",
+    boxShadow: "0 0 50px rgba(0,0,0,0.5)",
+  },
+  fullImg: {
+    maxWidth: "100%",
+    maxHeight: "90vh",
+    objectFit: "contain",
+    display: "block",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: "30px",
+    right: "30px",
+    background: "white",
+    color: "black",
+    width: "44px",
+    height: "44px",
+    borderRadius: "50%",
+    border: "none",
+    fontSize: "20px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10000,
+    boxShadow: "0 10px 20px rgba(0,0,0,0.2)",
   },
 };
 

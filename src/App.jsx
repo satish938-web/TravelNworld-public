@@ -71,6 +71,30 @@ const App = () => {
       <ScrollToTop />
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
+        {/* Agent Dashboard Routes - Place ABOVE public routes to avoid shadowing */}
+        <Route path="/agent" element={<AgentLayout />}>
+          <Route element={<ProfileGuard><Outlet /></ProfileGuard>}>
+            <Route index element={<AgentPanel />} />
+            <Route path="my-leads" element={<MyLeads />} />
+            <Route path="buy-leads" element={<BuyLeads />} />
+            <Route path="report" element={<MyReports />} />
+            <Route path="reviews" element={<MyReviews />} />
+            <Route path="team" element={<MyTeam />} />
+            <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="additional-info" element={<AdditionalInfo />} />
+            <Route path="hero-videos" element={<HeroVideoManagement />} />
+            <Route path="Create-Itinary" element={<AddItinerariesPremium />} />
+            <Route path="Edit-Itinary/:id" element={<AddItinerariesPremium />} />
+            <Route path="Manage-Itianary" element={<MyItineraries />} />
+            <Route path="destinations/:slug" element={<ItineraryParticularCard />} />
+            <Route
+              path="destination/:slug/destinations/:itineraryId"
+              element={<ItineraryDetail />}
+            />
+          </Route>
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/aboutUs" element={<AboutUs />} />
@@ -116,27 +140,6 @@ const App = () => {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-use" element={<TermsAndConditions />} />
         </Route>
-        <Route path="/agent" element={<AgentLayout />}>
-          <Route element={<ProfileGuard><Outlet /></ProfileGuard>}>
-            <Route index element={<AgentPanel />} />
-            <Route path="my-leads" element={<MyLeads />} />
-            <Route path="buy-leads" element={<BuyLeads />} />
-            <Route path="report" element={<MyReports />} />
-            <Route path="reviews" element={<MyReviews />} />
-            <Route path="team" element={<MyTeam />} />
-            <Route path="reset-password" element={<ResetPassword />} />
-            <Route path="additional-info" element={<AdditionalInfo />} />
-            <Route path="hero-videos" element={<HeroVideoManagement />} />
-            <Route path="Create-Itinary" element={<AddItinerariesPremium />} />
-            <Route path="destinations/:slug" element={<ItineraryParticularCard />} />
-            <Route
-              path="destination/:slug/destinations/:itineraryId"
-              element={<ItineraryDetail />}
-            />
-          </Route>
-          <Route path="profile" element={<Profile />} />
-        </Route>
-
       </Routes>
     </>
   );

@@ -42,7 +42,7 @@ const Home = () => {
       className="w-full relative overflow-x-hidden"
     >
       <TopMostBanner />
-      <Hero />
+      <Hero page="Home" />
       <HomeAboutUs />
 
       <motion.div variants={sectionVariants}>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bookmark, Share2, Phone, MapPin, Clock, Award, CheckCircle2, MessageSquare } from "lucide-react";
-import { motion } from "framer-motion";
+import { Bookmark, Share2, Phone, MapPin, Clock, Award, CheckCircle2, MessageSquare, Grid } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import CustomerEnquiryForm from "../../forms/CustomerEnquiryFrom";
 import travelItemPropType from '../../propTypes/travelItemPropType.js';
 import { getImageUrl } from '../../utils/api';
@@ -9,6 +9,16 @@ import { getImageUrl } from '../../utils/api';
 const Header = ({ travelItem }) => {
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showBannerLightbox, setShowBannerLightbox] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  // Auto-cycle banner images
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentOffset(prev => prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Use the first agent photo as banner, or a high-quality default
   // Use dashboard banner, then first agent photo, then default
@@ -49,16 +59,137 @@ const Header = ({ travelItem }) => {
       className="w-full bg-white rounded-3xl overflow-hidden border border-slate-100 shadow-xl shadow-red-900/5 mb-8"
     >
       {/* 1. Hero Banner Section */}
-      <div className="relative h-48 md:h-60 w-full overflow-hidden group">
-        <motion.img 
-          initial={{ scale: 1.2 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
-          src={bannerImage} 
-          alt="Company Banner" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+      <div className="relative h-64 md:h-80 w-full overflow-hidden group bg-slate-900">
+        {(() => {
+          let banners = [];
+          if (Array.isArray(travelItem.bannerImage)) {
+            banners = travelItem.bannerImage;
+          } else if (typeof travelItem.bannerImage === 'string' && travelItem.bannerImage) {
+            // Check for comma-separated legacy data
+            if (travelItem.bannerImage.includes(',') && !travelItem.bannerImage.includes('X-Amz-Signature')) {
+              banners = travelItem.bannerImage.split(',').map(s => s.trim()).filter(Boolean);
+            } else {
+              banners = [travelItem.bannerImage];
+            }
+          }
+
+          if (banners.length === 0) {
+            return (
+              <div className="w-full h-full bg-gradient-to-r from-slate-800 to-slate-900 opacity-60" />
+            );
+          }
+
+          if (banners.length === 1) {
+            const media = banners[0];
+            const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+            return (
+              <div className="w-full h-full relative">
+                {isVideo ? (
+                  <video src={getImageUrl(media)} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-60" />
+                ) : (
+                  <img src={getImageUrl(media)} alt="Company Banner" className="w-full h-full object-cover opacity-60" />
+                )}
+              </div>
+            );
+          }
+
+          // Premium Mosaic Layout for 2+ images
+          return (
+            <div className="grid grid-cols-4 grid-rows-2 w-full h-full gap-2 p-2">
+              <AnimatePresence mode="popLayout">
+                {(() => {
+                  // If we have more than 5 images, we cycle them. 
+                  // If we have exactly 5 or fewer, we just show them static or cycle if desired.
+                  // If we have more than 1 image, we cycle them.
+                  const displayedBanners = banners.length > 1 
+                    ? [0, 1, 2, 3, 4].map(i => banners[(i + currentOffset) % banners.length])
+                    : banners.slice(0, 5);
+
+                  return displayedBanners.map((media, idx) => {
+                    const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+                    return (
+                      <motion.div
+                        key={`${idx}-${media}`}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className={`${idx === 0 ? "col-span-2 row-span-2 rounded-l-2xl" : "col-span-1 row-span-1"} 
+                          ${idx === 1 && banners.length >= 3 ? "rounded-tr-2xl" : ""} 
+                          ${idx === 4 && banners.length >= 5 ? "rounded-br-2xl" : ""}
+                          relative overflow-hidden bg-slate-800 shadow-inner`}
+                      >
+                        {isVideo ? (
+                          <video src={getImageUrl(media)} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                        ) : (
+                          <img src={getImageUrl(media)} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-[10s] hover:scale-110" />
+                        )}
+                        {idx === 4 && banners.length > 5 && (
+                          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center cursor-pointer group">
+                            <span className="text-white font-black text-xs bg-white/20 px-4 py-2 rounded-full border border-white/30 group-hover:bg-white/40 transition-all uppercase tracking-widest">
+                              + {banners.length - 5} More
+                            </span>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  });
+                })()}
+              </AnimatePresence>
+            </div>
+          );
+        })()}
+        
+        {/* View All Photos Button */}
+        <div className="absolute bottom-6 right-6 z-30">
+          <button 
+            onClick={() => setShowBannerLightbox(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md text-slate-900 rounded-xl font-bold text-xs shadow-xl hover:bg-white transition-all active:scale-95 border border-slate-200"
+          >
+            <Grid className="text-[12px] opacity-70" size={14} />
+            Show all photos
+          </button>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+      
+      {/* Banner Lightbox Modal */}
+      {showBannerLightbox && (
+        <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto animate-fadeIn">
+          <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 py-4 flex justify-between items-center border-b border-slate-100">
+            <h3 className="font-black text-slate-900 uppercase tracking-widest text-sm">All Banner Photos</h3>
+            <button 
+              onClick={() => setShowBannerLightbox(false)}
+              className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-900 hover:bg-slate-200 transition-all"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="max-w-5xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(() => {
+              let banners = [];
+              if (Array.isArray(travelItem.bannerImage)) {
+                banners = travelItem.bannerImage;
+              } else if (typeof travelItem.bannerImage === 'string' && travelItem.bannerImage) {
+                banners = travelItem.bannerImage.split(',').map(s => s.trim()).filter(Boolean);
+              }
+              
+              return banners.map((media, idx) => {
+                const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+                return (
+                  <div key={idx} className="rounded-2xl overflow-hidden shadow-lg bg-slate-50 border border-slate-100 aspect-video">
+                    {isVideo ? (
+                      <video src={getImageUrl(media)} controls className="w-full h-full object-cover" />
+                    ) : (
+                      <img src={getImageUrl(media)} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                );
+              });
+            })()}
+          </div>
+        </div>
+      )}
         
         {/* Floating Badges on Banner */}
         <div className="absolute top-4 right-4 flex gap-2">

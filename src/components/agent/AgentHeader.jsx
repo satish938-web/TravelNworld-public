@@ -1,6 +1,7 @@
 import React from "react";
 import { Home, Headphones, Menu as MenuIcon, ListFilterPlus, ShoppingCart } from "lucide-react"; 
 import { useNavigate } from "react-router-dom";
+import { getImageUrl } from "../../utils/api";
 import logo from "../../assets/images/logo/logo.png";
 import profilImg from "../../assets/images/profile.png";
 
@@ -67,7 +68,10 @@ export default function AgentHeader({ onOpenLeft, onOpenRight }) {
 
           {/* Profile + Logout */}
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-4 pl-2">
+            <div 
+              className="hidden md:flex items-center gap-4 pl-2 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate("/agent/profile")}
+            >
               <div className="text-right leading-tight">
                 <p className="font-black text-slate-900 text-sm tracking-wide truncate max-w-[150px]">
                   {user?.firstName ? `${user.firstName} ${user.lastName}` : "ADMIRE HOLIDAYS"}
@@ -77,9 +81,9 @@ export default function AgentHeader({ onOpenLeft, onOpenRight }) {
                   <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter">Verified Agent</span>
                 </div>
               </div>
-              <div className="relative group cursor-pointer">
+              <div className="relative group">
                 <img
-                  src={user?.photo || profilImg}
+                  src={getImageUrl(user?.photo) || profilImg}
                   alt="Profile"
                   className="h-11 w-11 rounded-2xl border-2 border-white shadow-md object-cover group-hover:border-red-600 transition-all"
                 />

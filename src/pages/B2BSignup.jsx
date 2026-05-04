@@ -43,22 +43,21 @@ const [otp, setOtp] = useState("");
     const { firstName, lastName, email, phone_no, password, confirmPassword } = formData;
 
     if (!firstName.trim()) e.firstName = "First name is required";
-    if (!lastName.trim()) e.lastName = "Last name is required";
-
-    if (!email.trim()) e.email = "Email is required";
+    else if (!lastName.trim()) e.lastName = "Last name is required";
+    else if (!email.trim()) e.email = "Email is required";
     else if (!emailRegex.test(email.trim())) e.email = "Enter a valid email";
-
-    if (!phone_no) e.phone_no = "Phone number is required";
-    else if (!/^\d{10}$/.test(phone_no)) e.phone_no = "Phone number must be 10 digits";
-
-    if (!password) e.password = "Password is required";
+    else if (!phone_no) e.phone_no = "Phone number is required";
+    else if (!/^\d{10,15}$/.test(phone_no.replace(/\D/g, ''))) e.phone_no = "Enter a valid phone number (10-15 digits)";
+    else if (!password) e.password = "Password is required";
     else if (password.length < 6) e.password = "Password must be at least 6 characters";
-
-    if (!confirmPassword) e.confirmPassword = "Please confirm your password";
+    else if (!confirmPassword) e.confirmPassword = "Please confirm your password";
     else if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
 
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    if (Object.keys(e).length > 0) {
+      setFormError(Object.values(e)[0]);
+      return false;
+    }
+    return true;
   };
 
   const signup = async (data) => {
@@ -154,9 +153,18 @@ return signupResult;
       const data = await res.json();
 
       if (data.accessToken) {
+        const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
         localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("tokenExpiry", String(expiry));
+        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("isProfileComplete", String(data.user.isProfileComplete));
+        localStorage.setItem("user", JSON.stringify(data.user));
 
-        navigate("/admin"); //  SUCCESS
+        if (!data.user.isProfileComplete) {
+          navigate("/agent/profile");
+        } else {
+          navigate("/agent/");
+        }
       } else {
         throw new Error("Invalid OTP");
       }

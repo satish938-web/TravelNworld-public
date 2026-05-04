@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import EnquiryForm from "../../forms/EnquiryForm.jsx";
 import FallbackImage from "../../assets/images/heroFallback.png";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_BASE } from "../../utils/api";
+import { API_BASE, getImageUrl } from "../../utils/api";
 
 /* ─────────────────────────────────────────────
    PARTICLE FIELD – pure CSS-driven dots
@@ -133,7 +133,16 @@ const CountUp = ({ to, suffix = "" }) => {
 /* ─────────────────────────────────────────────
    HERO COMPONENT
 ───────────────────────────────────────────── */
-const Hero = () => {
+const Hero = ({ 
+  page = "Home", 
+  title1 = "Experience", 
+  title2 = "The", 
+  italicTitle = "Unseen.",
+  subtitle = "Bespoke journeys curated for the modern explorer. Where luxury meets legend — and every mile becomes a memory.",
+  showStats = page === "Home",
+  showForm = page === "Home",
+  kicker = "Elite Travel Experience"
+}) => {
   const [heroVideos, setHeroVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -144,7 +153,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchHeroVideos = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/hero-videos?page=Home`);
+        const response = await fetch(`${API_BASE}/api/hero-videos?page=${page}`);
         if (response.ok) {
           const data = await response.json();
           if (data.data && data.data.length > 0) {
@@ -164,7 +173,7 @@ const Hero = () => {
       }
     };
     fetchHeroVideos();
-  }, []);
+  }, [page]);
 
   const handleVideoEnd = () => {
     if (heroVideos.length > 1) {
@@ -174,6 +183,24 @@ const Hero = () => {
       videoRef.current.play().catch(() => {});
     }
   };
+
+  // Auto-cycle for images or if video fails/ends
+  useEffect(() => {
+    if (heroVideos.length <= 1) return;
+    
+    const currentUrl = getImageUrl(heroVideos[currentVideoIndex]?.url);
+    const isVideo = currentUrl.toLowerCase().endsWith('.mp4') || 
+                    currentUrl.toLowerCase().endsWith('.webm') || 
+                    currentUrl.toLowerCase().endsWith('.ogg');
+
+    // If it's an image, we need a timer to go to the next one
+    if (!isVideo) {
+      const timer = setTimeout(() => {
+        setCurrentVideoIndex((p) => (p + 1) % heroVideos.length);
+      }, 6000); // 6 seconds for images
+      return () => clearTimeout(timer);
+    }
+  }, [currentVideoIndex, heroVideos]);
 
   const handleVideoError = (e) => {
     console.error("Hero video error:", e);
@@ -206,8 +233,8 @@ const Hero = () => {
     }),
   };
 
-  const headline1 = "Experience".split("");
-  const headline2 = "The".split("");
+  const headline1 = title1.split("");
+  const headline2 = title2.split("");
 
   return (
     <>
@@ -272,35 +299,57 @@ const Hero = () => {
             />
           </div>
 
-          {/* ── Video ── */}
+          {/* ── Video / Image Media ── */}
           <AnimatePresence mode="wait">
-            {currentVideo && (
-              <motion.video
-                key={currentVideo.id || currentVideoIndex}
-                ref={videoRef}
-                src={currentVideo.url}
-                autoPlay
-                muted
-                playsInline
-                preload="auto"
-                loop={heroVideos.length === 1}
-                onEnded={handleVideoEnd}
-                onError={handleVideoError}
-                onPlaying={() => setIsReady(true)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isReady ? 1 : 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 1.2, ease: "easeInOut" }}
-                className="absolute w-full h-full object-cover z-0"
-              />
-            )}
+            {currentVideo && (() => {
+              const url = getImageUrl(currentVideo.url);
+              const isVideo = url.toLowerCase().endsWith('.mp4') || 
+                              url.toLowerCase().endsWith('.webm') || 
+                              url.toLowerCase().endsWith('.ogg');
+              
+              if (isVideo) {
+                return (
+                  <motion.video
+                    key={currentVideo.id || currentVideoIndex}
+                    ref={videoRef}
+                    src={url}
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    loop={heroVideos.length === 1}
+                    onEnded={handleVideoEnd}
+                    onError={handleVideoError}
+                    onPlaying={() => setIsReady(true)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isReady ? 1 : 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.2, ease: "easeInOut" }}
+                    className="absolute w-full h-full object-cover z-0"
+                  />
+                );
+              }
+              
+              return (
+                <motion.img
+                  key={currentVideo.id || currentVideoIndex}
+                  src={url}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  onLoad={() => setIsReady(true)}
+                  className="absolute w-full h-full object-cover z-0 opacity-60"
+                />
+              );
+            })()}
           </AnimatePresence>
 
           {/* Hidden preload for next video */}
           {nextVideo && (
             <video
               key={`preload-${nextVideo.id}`}
-              src={nextVideo.url}
+              src={getImageUrl(nextVideo.url)}
               preload="auto"
               muted
               style={{ display: "none" }}
@@ -324,17 +373,17 @@ const Hero = () => {
           />
 
           {/* ── Main content ── */}
-          <div className="relative z-20 flex flex-col md:flex-row items-center justify-between h-full px-6 md:px-16 max-w-[1800px] mx-auto gap-8">
+          <div className={`relative z-20 flex flex-col md:flex-row items-center ${showForm ? 'justify-between text-left' : 'justify-center text-center'} h-full px-6 md:px-16 max-w-[1800px] mx-auto gap-8`}>
 
-            {/* LEFT */}
-            <div className="text-white max-w-4xl text-center md:text-left flex-1">
+            {/* LEFT / CENTER */}
+            <div className={`text-white ${showForm ? 'max-w-4xl flex-1' : 'max-w-5xl'} ${!showForm && 'flex flex-col items-center'}`}>
 
               {/* Kicker */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2, duration: 0.7 }}
-                className="flex items-center gap-3 mb-8 justify-center md:justify-start"
+                className={`flex items-center gap-3 mb-8 ${showForm ? 'justify-center md:justify-start' : 'justify-center'}`}
               >
                 <div className="flex gap-[3px]">
                   {[...Array(3)].map((_, i) => (
@@ -362,7 +411,7 @@ const Hero = () => {
                     textShadow: "0 0 20px rgba(220,38,38,0.8)",
                   }}
                 >
-                  Elite Travel Experience
+                  {kicker}
                 </span>
               </motion.div>
 
@@ -377,7 +426,7 @@ const Hero = () => {
                   fontWeight: 900,
                 }}
               >
-                <div className="overflow-hidden flex justify-center md:justify-start flex-wrap">
+                <div className={`overflow-hidden flex ${showForm ? 'justify-center md:justify-start' : 'justify-center'} flex-wrap`}>
                   {headline1.map((ch, i) => (
                     <motion.span
                       key={i}
@@ -391,7 +440,7 @@ const Hero = () => {
                     </motion.span>
                   ))}
                 </div>
-                <div className="overflow-hidden flex justify-center md:justify-start flex-wrap gap-x-4">
+                <div className={`overflow-hidden flex ${showForm ? 'justify-center md:justify-start' : 'justify-center'} flex-wrap gap-x-4`}>
                   {headline2.map((ch, i) => (
                     <motion.span
                       key={i}
@@ -418,7 +467,7 @@ const Hero = () => {
                         textShadow: "0 0 40px rgba(37,99,235,0.3)",
                       }}
                     >
-                      Unseen.
+                      {italicTitle}
                     </motion.span>
                 </div>
               </h1>
@@ -438,9 +487,7 @@ const Hero = () => {
                   marginTop: "1.2rem",
                 }}
               >
-                Bespoke journeys curated for the{" "}
-                <span style={{ color: "#fff", fontWeight: 700 }}>modern explorer.</span>{" "}
-                Where luxury meets legend — and every mile becomes a memory.
+                {subtitle}
               </motion.p>
 
               {/* CTA buttons */}
@@ -448,7 +495,7 @@ const Hero = () => {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.9, duration: 0.7 }}
-                className="mt-10 flex flex-wrap gap-4 justify-center md:justify-start"
+                className={`mt-10 flex flex-wrap gap-4 ${showForm ? 'justify-center md:justify-start' : 'justify-center'}`}
               >
                 {/* Primary */}
                 <button
@@ -526,110 +573,114 @@ const Hero = () => {
               </motion.div>
 
               {/* Stats row */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.2, duration: 0.8 }}
-                className="mt-12 flex gap-8 justify-center md:justify-start"
-              >
-                {statItems.map(({ value, suffix, label }, i) => (
-                  <div key={i} className="text-center md:text-left">
-                    <div
-                      style={{
-                        fontFamily: "'Bebas Neue', cursive",
-                        fontSize: 36,
-                        color: "#fff",
-                        lineHeight: 1,
-                        textShadow: "0 0 20px rgba(220,38,38,0.4)",
-                      }}
-                    >
-                      <CountUp to={value} suffix={suffix} />
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'Barlow', sans-serif",
-                        fontWeight: 400,
-                        fontSize: 10,
-                        letterSpacing: "0.3em",
-                        textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.4)",
-                        marginTop: 2,
-                      }}
-                    >
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-
-            {/* RIGHT – form card */}
-            <motion.div
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.4 }}
-              className="hidden md:block flex-shrink-0 w-full max-w-[300px] lg:max-w-[320px]"
-            >
-              {/* Animated border */}
-              <div
-                style={{
-                  padding: 2,
-                  borderRadius: "2.5rem",
-                  background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(255,255,255,0.06), rgba(220,38,38,0.5))",
-                  backgroundSize: "300% 300%",
-                  animation: "shimmerBorder 3s linear infinite",
-                }}
-              >
-                <div
-                  style={{
-                    background: "rgba(0,0,0,0.55)",
-                    backdropFilter: "blur(28px)",
-                    WebkitBackdropFilter: "blur(28px)",
-                    borderRadius: "calc(2.5rem - 2px)",
-                    padding: "0.75rem",
-                    boxShadow: "0 0 80px rgba(220,38,38,0.12), 0 40px 80px rgba(0,0,0,0.5)",
-                  }}
+              {showStats && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 2.2, duration: 0.8 }}
+                  className={`mt-12 flex gap-8 ${showForm ? 'justify-center md:justify-start' : 'justify-center'}`}
                 >
-                  {/* Card header */}
-                  <div style={{ marginBottom: "0.5rem", textAlign: "center" }}>
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 8,
-                        background: "rgba(220,38,38,0.12)",
-                        border: "1px solid rgba(220,38,38,0.3)",
-                        borderRadius: 999,
-                        padding: "5px 12px",
-                      }}
-                    >
-                      <span
+                  {statItems.map(({ value, suffix, label }, i) => (
+                    <div key={i} className="text-center md:text-left">
+                      <div
                         style={{
-                          width: 6, height: 6, borderRadius: "50%",
-                          background: "#dc2626",
-                          boxShadow: "0 0 6px #dc2626",
-                          animation: "redLineBlink 1.5s ease-in-out infinite",
+                          fontFamily: "'Bebas Neue', cursive",
+                          fontSize: 36,
+                          color: "#fff",
+                          lineHeight: 1,
+                          textShadow: "0 0 20px rgba(220,38,38,0.4)",
                         }}
-                      />
-                      <span
+                      >
+                        <CountUp to={value} suffix={suffix} />
+                      </div>
+                      <div
                         style={{
                           fontFamily: "'Barlow', sans-serif",
-                          fontWeight: 700,
+                          fontWeight: 400,
                           fontSize: 10,
                           letterSpacing: "0.3em",
                           textTransform: "uppercase",
-                          color: "#ff6666",
+                          color: "rgba(255,255,255,0.4)",
+                          marginTop: 2,
                         }}
                       >
-                        Join with us as a member
-                      </span>
+                        {label}
+                      </div>
                     </div>
-                  </div>
+                  ))}
+                </motion.div>
+              )}
+            </div>
 
-                  <EnquiryForm variant="transparent" />
+            {/* RIGHT – form card */}
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.4 }}
+                className="hidden md:block flex-shrink-0 w-full max-w-[300px] lg:max-w-[320px]"
+              >
+                {/* Animated border */}
+                <div
+                  style={{
+                    padding: 2,
+                    borderRadius: "2.5rem",
+                    background: "linear-gradient(135deg, rgba(220,38,38,0.8), rgba(255,255,255,0.06), rgba(220,38,38,0.5))",
+                    backgroundSize: "300% 300%",
+                    animation: "shimmerBorder 3s linear infinite",
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "rgba(0,0,0,0.55)",
+                      backdropFilter: "blur(28px)",
+                      WebkitBackdropFilter: "blur(28px)",
+                      borderRadius: "calc(2.5rem - 2px)",
+                      padding: "0.75rem",
+                      boxShadow: "0 0 80px rgba(220,38,38,0.12), 0 40px 80px rgba(0,0,0,0.5)",
+                    }}
+                  >
+                    {/* Card header */}
+                    <div style={{ marginBottom: "0.5rem", textAlign: "center" }}>
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 8,
+                          background: "rgba(220,38,38,0.12)",
+                          border: "1px solid rgba(220,38,38,0.3)",
+                          borderRadius: 999,
+                          padding: "5px 12px",
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 6, height: 6, borderRadius: "50%",
+                            background: "#dc2626",
+                            boxShadow: "0 0 6px #dc2626",
+                            animation: "redLineBlink 1.5s ease-in-out infinite",
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "'Barlow', sans-serif",
+                            fontWeight: 700,
+                            fontSize: 10,
+                            letterSpacing: "0.3em",
+                            textTransform: "uppercase",
+                            color: "#ff6666",
+                          }}
+                        >
+                          Join with us as a member
+                        </span>
+                      </div>
+                    </div>
+
+                    <EnquiryForm variant="transparent" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </div>
 
           {/* ── Video dots ── */}
@@ -723,22 +774,24 @@ const Hero = () => {
         </div>
 
         {/* ── Mobile form ── */}
-        <div className="md:hidden px-4 py-10 bg-black">
-          <div
-            style={{
-              background: "rgba(20,20,20,0.95)",
-              border: "1px solid rgba(220,38,38,0.25)",
-              borderRadius: "1.75rem",
-              padding: "1.75rem",
-              marginTop: "-3rem",
-              position: "relative",
-              zIndex: 30,
-              boxShadow: "0 0 60px rgba(220,38,38,0.1)",
-            }}
-          >
-            <EnquiryForm variant="solid" />
+        {showForm && (
+          <div className="md:hidden px-4 py-10 bg-black">
+            <div
+              style={{
+                background: "rgba(20,20,20,0.95)",
+                border: "1px solid rgba(220,38,38,0.25)",
+                borderRadius: "1.75rem",
+                padding: "1.75rem",
+                marginTop: "-3rem",
+                position: "relative",
+                zIndex: 30,
+                boxShadow: "0 0 60px rgba(220,38,38,0.1)",
+              }}
+            >
+              <EnquiryForm variant="solid" />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

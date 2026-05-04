@@ -350,10 +350,10 @@ const AdditionalInfo = () => {
           <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
             <MediaUploader
               key={`${formData._id}-banner`}
-              label="Agent Profile Banner (Drag & Upload)"
-              maxFiles={1}
-              existingUrls={formData.bannerImage ? [formData.bannerImage] : []}
-              onChange={(urls) => handleUpdateField("bannerImage", urls[0] || "")}
+              label="Agent Profile Banner (Drag & Upload Multiple)"
+              maxFiles={5}
+              existingUrls={Array.isArray(formData.bannerImage) ? formData.bannerImage : (formData.bannerImage ? [formData.bannerImage] : [])}
+              onChange={(urls) => handleUpdateField("bannerImage", urls)}
             />
             <p className="mt-4 text-[10px] text-slate-400 font-medium italic">This banner appears as the large background image on the agent's public profile.</p>
           </div>

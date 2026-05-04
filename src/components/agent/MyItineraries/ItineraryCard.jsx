@@ -13,13 +13,19 @@ const ItineraryCard = ({ destination, onEdit, onDelete, onTogglePublic, showActi
   }
 
   const handleCardClick = () => {
-    if (destination.slug) navigate(`/agent/destinations/${destination.slug}`, { state: { destination } });
+    const id = destination._id || destination.id;
+    if (destination.slug) {
+      navigate(`/agent/destinations/${destination.slug}`, { state: { destination } });
+    } else if (id) {
+       // Fallback to ID based routing if needed, or destination specific view
+       navigate(`/agent/destinations/${id}`, { state: { destination } });
+    }
   };
 
-  const firstImage =
-    destination.images && destination.images.length ? destination.images[0] : null;
-  const imageUrl =
-    typeof firstImage === "string" ? firstImage : firstImage?.url || "/path-to-default-image.jpg";
+  const imageUrl = destination.coverImageUrl || 
+    (destination.images && destination.images.length ? (typeof destination.images[0] === "string" ? destination.images[0] : destination.images[0].url) : null) ||
+    (destination.gallery && destination.gallery.length ? destination.gallery[0] : null) ||
+    "/path-to-default-image.jpg";
 
   return (
     <div
@@ -73,7 +79,7 @@ const ItineraryCard = ({ destination, onEdit, onDelete, onTogglePublic, showActi
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 sm:p-4">
           <div className="flex items-center text-white text-sm sm:text-base">
             <FaMapMarkerAlt className="mr-2 text-orange-400" />
-            <span className="font-medium truncate">{destination.name || "Untitled"}</span>
+            <span className="font-medium truncate">{destination.destination || destination.name || "Untitled"}</span>
           </div>
         </div>
 
@@ -89,17 +95,19 @@ const ItineraryCard = ({ destination, onEdit, onDelete, onTogglePublic, showActi
         <h3 className="font-semibold text-gray-800 mb-1 sm:mb-2 text-sm sm:text-base truncate">
           {destination.title || destination.name}
         </h3>
-        {destination.price && (
-          <div className="flex items-center justify-between text-sm sm:text-base">
-            <span className="font-bold text-orange-600">₹{Number(destination.price).toLocaleString()}</span>
-            {destination.discount && <span className="text-green-600 text-xs sm:text-sm">{destination.discount}% off</span>}
+        <div className="flex items-center justify-between text-sm sm:text-base">
+          <div className="flex flex-col">
+            <span className="font-bold text-[#E69233]">
+              ₹{(destination.discountedPrice || destination.priceFrom || destination.price || 0).toLocaleString()}
+            </span>
+            {destination.priceFrom && destination.discountedPrice && (
+              <span className="text-xs text-gray-400 line-through">₹{destination.priceFrom.toLocaleString()}</span>
+            )}
           </div>
-        )}
-        {destination.destinations && Array.isArray(destination.destinations) && (
-          <p className="text-gray-600 text-xs sm:text-sm mt-1 sm:mt-2 truncate">
-            {destination.destinations.join(", ")}
-          </p>
-        )}
+          {destination.duration && (
+            <span className="text-gray-500 text-xs">{destination.duration}</span>
+          )}
+        </div>
       </div>
     </div>
   );

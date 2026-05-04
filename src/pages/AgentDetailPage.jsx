@@ -25,6 +25,7 @@ import {
   FaBuilding
 } from "react-icons/fa";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE, getImageUrl } from "../utils/api";
 
 import { trendingDestinations } from "../data/agentData";
@@ -40,6 +41,16 @@ const AgentDetailPage = () => {
   const [agent, setAgent] = useState(null);
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showBannerLightbox, setShowBannerLightbox] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+
+  // Auto-cycle banner images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentOffset(prev => prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -141,7 +152,8 @@ const AgentDetailPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <>
+      <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
       {/* Fixed Contact Card for Mobile */}
       {isSticky && (
         <div className="fixed top-20 right-4 z-40 bg-white rounded-xl shadow-lg p-4 border border-gray-200 lg:hidden">
@@ -166,17 +178,135 @@ const AgentDetailPage = () => {
       )}
 
       {/* Hero Banner Section */}
-      <div className="relative w-full h-[300px] sm:h-[400px] bg-slate-900 overflow-hidden">
-        {agent.bannerImage ? (
-          <img 
-            src={getImageUrl(agent.bannerImage)} 
-            alt="Banner" 
-            className="w-full h-full object-cover opacity-60"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-r from-slate-800 to-slate-900 opacity-60" />
+      <div className="relative w-full h-[350px] sm:h-[450px] md:h-[500px] bg-slate-900 overflow-hidden">
+        {(() => {
+          let banners = [];
+          if (Array.isArray(agent.bannerImage)) {
+            banners = agent.bannerImage;
+          } else if (typeof agent.bannerImage === 'string' && agent.bannerImage) {
+            if (agent.bannerImage.includes(',') && !agent.bannerImage.includes('X-Amz-Signature')) {
+              banners = agent.bannerImage.split(',').map(s => s.trim()).filter(Boolean);
+            } else {
+              banners = [agent.bannerImage];
+            }
+          }
+          
+          if (banners.length === 0) {
+            return <div className="w-full h-full bg-gradient-to-r from-slate-800 to-slate-900 opacity-60" />;
+          }
+
+          if (banners.length === 1) {
+            const media = banners[0];
+            const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+            return (
+              <div className="w-full h-full relative">
+                {isVideo ? (
+                  <video src={getImageUrl(media)} autoPlay muted loop playsInline className="w-full h-full object-cover opacity-60" />
+                ) : (
+                  <img src={getImageUrl(media)} alt="Banner" className="w-full h-full object-cover opacity-60" />
+                )}
+              </div>
+            );
+          }
+
+          // Premium Mosaic Layout for 2+ images
+          return (
+            <div className="grid grid-cols-4 grid-rows-2 w-full h-full gap-2 p-2">
+              <AnimatePresence mode="popLayout">
+                {(() => {
+                  // If we have more than 1 image, we cycle them.
+                  const displayedBanners = banners.length > 1 
+                    ? [0, 1, 2, 3, 4].map(i => banners[(i + currentOffset) % banners.length])
+                    : banners.slice(0, 5);
+
+                  return displayedBanners.map((media, idx) => {
+                    const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+                    return (
+                      <motion.div
+                        key={`${idx}-${media}`}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.8, ease: "easeInOut" }}
+                        className={`${idx === 0 ? "col-span-2 row-span-2 rounded-l-2xl" : "col-span-1 row-span-1"} 
+                          ${idx === 1 && banners.length >= 3 ? "rounded-tr-2xl" : ""} 
+                          ${idx === 4 && banners.length >= 5 ? "rounded-br-2xl" : ""}
+                          relative overflow-hidden bg-slate-800 shadow-inner`}
+                      >
+                        {isVideo ? (
+                          <video src={getImageUrl(media)} autoPlay muted loop playsInline className="w-full h-full object-cover" />
+                        ) : (
+                          <img src={getImageUrl(media)} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-[10s] hover:scale-110" />
+                        )}
+                        {idx === 4 && banners.length > 5 && (
+                          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center cursor-pointer group">
+                            <span className="text-white font-black text-xs bg-white/20 px-4 py-2 rounded-full border border-white/30 group-hover:bg-white/40 transition-all uppercase tracking-widest">
+                              + {banners.length - 5} More
+                            </span>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  });
+                })()}
+              </AnimatePresence>
+            </div>
+          );
+        })()}
+        
+        {/* View All Photos Button */}
+        <div className="absolute bottom-6 right-6 z-30">
+          <button 
+            onClick={() => setShowBannerLightbox(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-md text-slate-900 rounded-xl font-bold text-xs shadow-xl hover:bg-white transition-all active:scale-95 border border-slate-200"
+          >
+            <FaQuoteLeft className="text-[10px] opacity-60" />
+            Show all photos
+          </button>
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent pointer-events-none" />
+      
+        {/* Banner Lightbox Modal */}
+        {showBannerLightbox && (
+          <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto animate-fadeIn text-slate-900">
+            <div className="sticky top-0 bg-white/80 backdrop-blur-md z-10 px-6 py-4 flex justify-between items-center border-b border-gray-200">
+              <h3 className="font-bold text-[#261F43] text-lg uppercase tracking-widest">Banner Gallery</h3>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowBannerLightbox(false);
+                }}
+                className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 hover:bg-gray-200 transition-all"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {(() => {
+                let banners = [];
+                if (Array.isArray(agent.bannerImage)) {
+                  banners = agent.bannerImage;
+                } else if (typeof agent.bannerImage === 'string' && agent.bannerImage) {
+                  banners = agent.bannerImage.split(',').map(s => s.trim()).filter(Boolean);
+                }
+                
+                return banners.map((media, idx) => {
+                  const isVideo = media.toLowerCase().endsWith('.mp4') || media.toLowerCase().endsWith('.webm') || media.toLowerCase().endsWith('.ogg');
+                  return (
+                    <div key={idx} className="rounded-2xl overflow-hidden shadow-xl bg-gray-50 border border-gray-100 aspect-video">
+                      {isVideo ? (
+                        <video src={getImageUrl(media)} controls className="w-full h-full object-cover" />
+                      ) : (
+                        <img src={getImageUrl(media)} alt={`Banner ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      )}
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
         
         {/* Profile Overlay */}
         <div className="absolute bottom-0 left-0 w-full translate-y-1/2 z-20">
@@ -576,8 +706,8 @@ const AgentDetailPage = () => {
                                 displayBlogs = agent.blogs.filter(b => b.isPublished !== false);
                               }
 
-                              // Always duplicate for infinite marquee effect
-                              const marqueeItems = [...displayBlogs, ...displayBlogs];
+                              // Only duplicate if we have very few items to ensure smooth marquee
+                              const marqueeItems = displayBlogs.length > 3 ? displayBlogs : [...displayBlogs, ...displayBlogs, ...displayBlogs];
 
                               return marqueeItems.map((blog, idx) => (
                                 <div 
@@ -828,7 +958,8 @@ const AgentDetailPage = () => {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 

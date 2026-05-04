@@ -5,8 +5,9 @@ import { S3_BASE_URL } from "../../../utils/api";
 // Convert S3 key to full URL if needed
 const toFullUrl = (key) => {
   if (!key) return "";
-  if (key.startsWith("http") || key.startsWith("blob:") || key.startsWith("data:")) return key;
-  return `${S3_BASE_URL}/${key.startsWith("/") ? key.slice(1) : key}`;
+  const keyStr = String(key);
+  if (keyStr.startsWith("http") || keyStr.startsWith("blob:") || keyStr.startsWith("data:")) return keyStr;
+  return `${S3_BASE_URL}/${keyStr.startsWith("/") ? keyStr.slice(1) : keyStr}`;
 };
 
 /**
@@ -33,7 +34,7 @@ const MediaUploader = ({
       .map((url) => ({
         url: toFullUrl(url),
         status: "done",
-        isVideo: /\.(mp4|mov|avi|webm|mkv)/i.test(url),
+        isVideo: /\.(mp4|mov|avi|webm|mkv)(\?|$)/i.test(String(url)),
       }))
   );
   const [isDragging, setIsDragging] = useState(false);
@@ -48,7 +49,7 @@ const MediaUploader = ({
       filtered.map((url) => ({
         url: toFullUrl(url),
         status: "done",
-        isVideo: /\.(mp4|mov|avi|webm|mkv)/i.test(url),
+        isVideo: /\.(mp4|mov|avi|webm|mkv)(\?|$)/i.test(String(url)),
       }))
     );
   }, [JSON.stringify(existingUrls)]);

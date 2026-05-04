@@ -12,6 +12,7 @@ import {
   ChevronRight,
   ShieldCheck,
 } from "lucide-react";
+import toast from 'react-hot-toast';
 import travelItemPropType from '../../propTypes/travelItemPropType.js';
 
 function RightSide({ travelItem }) {
@@ -45,12 +46,29 @@ function RightSide({ travelItem }) {
   };
 
   const quickActions = [
-    { icon: Phone, label: "Request Callback" },
-    { icon: Mail, label: "Inquire via Email" },
-    { icon: Share2, label: "Share Profile" },
-    { icon: Star, label: "Rate Service" },
-    { icon: Edit, label: "Suggest Update" },
+    { icon: Phone, label: "Request Callback", action: () => window.location.href = `tel:${travelItem.phone}` },
+    { icon: Mail, label: "Inquire via Email", action: () => window.location.href = `mailto:${travelItem.email || 'contact@travelnworld.com'}` },
+    { icon: Share2, label: "Share Profile", action: () => {
+        if (navigator.share) {
+          navigator.share({ title: travelItem.title, url: window.location.href });
+        } else {
+          navigator.clipboard.writeText(window.location.href);
+          toast.success("Profile link copied!");
+        }
+    }},
+    { icon: Star, label: "Rate Service", action: () => document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' }) },
+    { icon: Edit, label: "Suggest Update", action: () => window.location.href = 'mailto:support@travelnworld.com?subject=Update Suggestion' },
   ];
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("Profile link copied!");
+  };
+
+  const handleDirections = () => {
+    const address = travelItem.fullAddress || `${travelItem.title} ${travelItem.city || ''}`;
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank');
+  };
 
   return (
     <motion.div
@@ -86,10 +104,16 @@ function RightSide({ travelItem }) {
               {travelItem.fullAddress || "Address details on file"}
             </p>
             <div className="flex gap-2">
-              <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 text-slate-900 font-bold rounded-xl transition-colors text-[10px] hover:bg-slate-100 border border-slate-200">
+              <button 
+                onClick={handleDirections}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 text-slate-900 font-bold rounded-xl transition-colors text-[10px] hover:bg-slate-100 border border-slate-200"
+              >
                 <MapPin size={14} /> Directions
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 text-slate-900 font-bold rounded-xl transition-colors text-[10px] hover:bg-slate-100 border border-slate-200">
+              <button 
+                onClick={handleCopy}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 text-slate-900 font-bold rounded-xl transition-colors text-[10px] hover:bg-slate-100 border border-slate-200"
+              >
                 <Copy size={14} /> Copy
               </button>
             </div>
@@ -111,6 +135,7 @@ function RightSide({ travelItem }) {
               {quickActions.slice(0, expandMore ? quickActions.length : 3).map((item, idx) => (
                 <button
                   key={idx}
+                  onClick={item.action}
                   className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 font-bold hover:bg-slate-50 rounded-xl transition-all text-[11px] border border-transparent hover:border-slate-100"
                 >
                   <item.icon size={14} className="text-red-600" />

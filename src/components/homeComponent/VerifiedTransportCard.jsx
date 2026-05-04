@@ -52,16 +52,19 @@ const injectStyles = () => {
     }
 
     /* ─────────────────── Card shell ─────────────────── */
+    .vtc-scroll {
+      display: flex;
+      gap: 20px;
+    }
     .vtc-card {
       background: #fff;
       border-radius: 24px;
       overflow: hidden;
       position: relative;
-      display: inline-block;
-      vertical-align: top;
-      width: 278px;
-      margin-right: 20px;
       flex-shrink: 0;
+      /* Responsive Widths */
+      width: calc(25% - 15px);
+      
       /* Animated rainbow border on hover via outline trick + pseudo */
       border: 1.5px solid rgba(0,0,0,0.07);
       transition:
@@ -266,11 +269,19 @@ const injectStyles = () => {
 
     .vtc-live-dot { animation: vtc-blink 1.6s ease-in-out infinite; }
 
-    /* ─────────────────── Mobile card ─────────────────── */
-    .vtc-card-mobile {
-      display: block !important;
-      width: 100% !important;
-      margin-right: 0 !important;
+    /* ─────────────────── Responsive Queries ─────────────────── */
+    @media (max-width: 1200px) {
+      .vtc-card { width: calc(33.333% - 14px); }
+    }
+    @media (max-width: 768px) {
+      .vtc-card { width: calc(33.333% - 14px); }
+    }
+    @media (max-width: 480px) {
+      .vtc-card { width: calc(33.333% - 14px); }
+      .vtc-img-wrap { height: 130px; }
+      .vtc-body { padding: 8px; }
+      .vtc-cta { font-size: 9px; padding: 8px 0; }
+      .vtc-verified { font-size: 7px; padding: 3px 6px; top: 8px; left: 8px; }
     }
   `;
   document.head.appendChild(s);
@@ -289,13 +300,9 @@ const Stars = ({ rating }) => (
 );
 
 /* ── Card ── */
-const Card = ({ item, mobile, slideKey, navigate }) => (
+const Card = ({ item, navigate }) => (
   <motion.div
-    key={mobile ? slideKey : undefined}
-    className={`vtc-card${mobile ? " vtc-card-mobile" : ""}`}
-    initial={mobile ? { opacity:0, x:40 } : false}
-    animate={mobile ? { opacity:1, x:0 } : false}
-    transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
+    className="vtc-card"
     onClick={() => navigate(`/agent/${item.slug || item.id}`)}
   >
     {/* ── Image zone ── */}
@@ -398,9 +405,6 @@ const VerifiedTransportCard = () => {
   const rafRef                          = useRef(null);
   const pauseTimeout                    = useRef(null);
   const [isPaused, setIsPaused]         = useState(false);
-  const [isMobile, setIsMobile]         = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [slideKey, setSlideKey]         = useState(0);
   const isDragging                      = useRef(false);
   const startX                          = useRef(0);
   const scrollLeftRef                   = useRef(0);
@@ -427,25 +431,8 @@ const VerifiedTransportCard = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    const fn = () => setIsMobile(window.innerWidth < 768);
-    fn(); window.addEventListener("resize", fn);
-    return () => window.removeEventListener("resize", fn);
-  }, []);
-
-  /* Mobile auto-slide */
-  useEffect(() => {
-    if (!isMobile || isPaused || !data.length) return;
-    const iv = setInterval(() => {
-      setCurrentIndex(p => (p+1) % data.length);
-      setSlideKey(k => k+1);
-    }, 4000);
-    return () => clearInterval(iv);
-  }, [isMobile, isPaused, data.length]);
-
   /* Desktop RAF scroll */
   useEffect(() => {
-    if (isMobile) return;
     const el = scrollRef.current; if (!el) return;
     const step = () => {
       if (!isPaused && !isDragging.current) {
@@ -456,7 +443,7 @@ const VerifiedTransportCard = () => {
     };
     rafRef.current = requestAnimationFrame(step);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [isPaused, isMobile, data.length]);
+  }, [isPaused, data.length]);
 
   const pause  = ()                    => { setIsPaused(true); clearTimeout(pauseTimeout.current); };
   const resume = (d = PAUSE_DURATION)  => { pauseTimeout.current = setTimeout(() => setIsPaused(false), d); };
@@ -470,13 +457,10 @@ const VerifiedTransportCard = () => {
   const onTE = () => { isDragging.current=false; resume(); };
 
   const navClick = dir => {
-    if (isMobile) {
-      setCurrentIndex(p => dir==="next" ? (p+1)%data.length : (p-1+data.length)%data.length);
-      setSlideKey(k=>k+1); pause(); resume(3000);
-    } else {
-      scrollRef.current.scrollBy({ left: dir==="next" ? 298 : -298, behavior:"smooth" });
-      pause(); resume();
-    }
+    const cardWidth = scrollRef.current?.firstElementChild?.offsetWidth || 300;
+    const gap = 20;
+    scrollRef.current.scrollBy({ left: dir==="next" ? (cardWidth + gap) : -(cardWidth + gap), behavior:"smooth" });
+    pause(); resume();
   };
 
   return (
@@ -557,28 +541,7 @@ const VerifiedTransportCard = () => {
         </div>
 
         {/* ── Cards ── */}
-        {isMobile ? (
-          <div style={{ padding:"0 4px" }}>
-            {data.length === 0 ? <Empty /> : (
-              <Card key={slideKey} item={data[currentIndex]} mobile slideKey={slideKey} navigate={navigate} />
-            )}
-            {data.length > 0 && (
-              <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:20 }}>
-                {data.map((_,i) => (
-                  <button key={i} aria-label={`Slide ${i+1}`}
-                    onClick={() => { setCurrentIndex(i); setSlideKey(k=>k+1); pause(); resume(3000); }}
-                    style={{
-                      height:5, borderRadius:99, border:"none", cursor:"pointer", padding:0,
-                      width: i===currentIndex ? 28 : 7,
-                      background: i===currentIndex ? "#dc2626" : "rgba(0,0,0,0.15)",
-                      transition:"all .3s ease",
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : data.length === 0 ? <Empty /> : (
+        {data.length === 0 ? <Empty /> : (
           <div
             ref={scrollRef}
             className="vtc-scroll"
@@ -588,13 +551,13 @@ const VerifiedTransportCard = () => {
             onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}
           >
             {[...data,...data].map((item,i) => (
-              <Card key={i} item={item} mobile={false} navigate={navigate} />
+              <Card key={i} item={item} navigate={navigate} />
             ))}
           </div>
         )}
 
         {/* Live dot */}
-        {data.length > 0 && !isMobile && (
+        {data.length > 0 && (
           <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:26, opacity:.32 }}>
             <div className="vtc-live-dot" style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626" }} />
             <span style={{

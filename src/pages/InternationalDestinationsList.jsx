@@ -5,6 +5,7 @@ import { HiOutlineArrowRight, HiOutlineGlobeAlt } from "react-icons/hi";
 import DestinationCard from "../components/DestinationCard";
 import internationalDestinations from "../data/internationalDestinationsData";
 import { getJson, getImageUrl } from "../utils/api";
+import Hero from "../components/homeComponent/Hero.jsx";
 
 const InternationalDestinationsList = () => {
   const [showAll, setShowAll] = useState(false);
@@ -39,43 +40,13 @@ const InternationalDestinationsList = () => {
 
   return (
     <div className="min-h-screen bg-[#f9fafb]">
-      {/* Premium Global Hero */}
-      <div className="relative pt-44 pb-32 px-6 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,rgba(37,99,235,0.1),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
-            <span className="w-10 h-px bg-red-600"></span>
-            <span className="text-red-600 font-bold uppercase tracking-[0.4em] text-[10px]">World-Class Escapes</span>
-            <span className="w-10 h-px bg-red-600"></span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-8xl font-black text-white tracking-tight leading-none mb-8"
-          >
-            International <span className="text-red-600 italic">Destinations</span>
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto"
-          >
-            Embark on a global journey. Explore exotic beaches, modern skylines, and ancient wonders across the seven continents.
-          </motion.p>
-        </div>
-      </div>
+      <Hero 
+        page="International" 
+        title1="World-Class" 
+        title2="Escapes" 
+        italicTitle="Global." 
+        subtitle="Embark on a global journey. Explore exotic beaches, modern skylines, and ancient wonders across the seven continents."
+      />
 
       {/* Grid Area */}
       <div className="max-w-[1400px] mx-auto px-6 py-24">

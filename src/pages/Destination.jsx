@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HiOutlineArrowRight, HiOutlineGlobeAlt, HiOutlineLocationMarker } from 'react-icons/hi';
+import Hero from "../components/homeComponent/Hero.jsx";
 
 const Destination = () => {
   const categories = [
@@ -27,42 +28,15 @@ const Destination = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Luxury Hero Section */}
-      <div className="relative pt-44 pb-24 px-6 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.2),transparent_70%)]" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-3 mb-6"
-          >
-            <span className="w-10 h-px bg-red-600"></span>
-            <span className="text-red-600 font-bold uppercase tracking-[0.4em] text-[10px]">Your Journey Begins Here</span>
-            <span className="w-10 h-px bg-red-600"></span>
-          </motion.div>
-
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-8xl font-black text-white tracking-tight leading-none mb-8"
-          >
-            Choose Your <span className="text-red-600 italic">Horizon</span>
-          </motion.h1>
-
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-slate-400 text-lg md:text-xl font-medium max-w-2xl mx-auto"
-          >
-            Whether you seek the comfort of home or the thrill of the unknown, we have the perfect destination waiting for you.
-          </motion.p>
-        </div>
-      </div>
+      <Hero 
+        page="Destination" 
+        title1="The" 
+        title2="Global" 
+        italicTitle="Frontier." 
+        subtitle="Embark on a voyage to the most iconic and remote corners of the planet. Whether you're drawn to the ancient architectural marvels of Europe, the pristine wilderness of Africa, or the spiritual sanctuaries of Asia, we provide the ultimate gateway to the world's diverse beauty."
+        kicker="EXPLORE THE UNKNOWN"
+        showForm={false}
+      />
 
       {/* Categories Grid */}
       <div className="max-w-7xl mx-auto px-6 py-24">

@@ -1,15 +1,55 @@
+import { useMemo } from "react";
 import ItineraryCard from "./ItineraryCard";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import RightSidebar from "../RightSidebar";
 
 const MyItineraries = () => {
-  const state = useSelector((state) => state.filter);
-  const { destinations } = useOutletContext();
-  const list =
-    state?.itineraries && state.itineraries.length
-      ? state.itineraries
-      : destinations || [];
+  const navigate = useNavigate();
+  const filterState = useSelector((state) => state.filter);
+  const { rawDestinations, removeDestinationItinerary } = useOutletContext();
+  
+  const handleEdit = (itinerary) => {
+    const id = itinerary._id || itinerary.id || itinerary.slug;
+    if (id) navigate(`/agent/Edit-Itinary/${id}`);
+  };
+
+  const handleDelete = async (itinerary) => {
+    if (window.confirm("Are you sure you want to delete this itinerary?")) {
+      const id = itinerary._id || itinerary.id || itinerary.slug;
+      if (removeDestinationItinerary) await removeDestinationItinerary(id);
+    }
+  };
+
+  // Apply filters locally to the real data (rawDestinations)
+  const list = useMemo(() => {
+    if (!rawDestinations) return [];
+    let data = [...rawDestinations];
+
+    // Filter by Type (Domestic/International)
+    const selectedTypes = Array.isArray(filterState.leadTypes)
+      ? filterState.leadTypes.map((t) => String(t).toLowerCase())
+      : [];
+    if (selectedTypes.length && !selectedTypes.includes("all")) {
+      data = data.filter((item) => selectedTypes.includes(String(item.type).toLowerCase()));
+    }
+
+    // Filter by City/Destination
+    if (filterState.city) {
+      const search = String(filterState.city).toLowerCase();
+      data = data.filter((item) => 
+        (item.destination || "").toLowerCase().includes(search) || 
+        (item.title || "").toLowerCase().includes(search)
+      );
+    }
+
+    // Filter by Budget
+    if (filterState.budget?.max) {
+      data = data.filter((item) => (item.discountedPrice || item.priceFrom || 0) <= filterState.budget.max);
+    }
+
+    return data;
+  }, [rawDestinations, filterState]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 sm:p-6 max-w-7xl mx-auto">
@@ -24,12 +64,16 @@ const MyItineraries = () => {
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {list.map((destination) => (
+            {list.map((itinerary) => (
               <div
-                key={destination.id}
+                key={itinerary._id || itinerary.id}
                 className="transition-transform transform hover:scale-105 hover:shadow-xl rounded-lg"
               >
-                <ItineraryCard destination={destination} />
+                <ItineraryCard 
+                  destination={itinerary} 
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               </div>
             ))}
           </div>

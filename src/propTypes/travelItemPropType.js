@@ -30,7 +30,7 @@ const travelItemPropType = PropTypes.shape({
   agentVideos: PropTypes.arrayOf(PropTypes.string),
   overview: PropTypes.string,
   quickInfo: PropTypes.string,
-  services: PropTypes.string,
+  services: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   blog: PropTypes.string,
   happyCustomers: PropTypes.string,
   testimonials: PropTypes.arrayOf(

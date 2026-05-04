@@ -11,6 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { getJson, getImageUrl } from "../utils/api";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiSearch, HiOutlineMap, HiOutlineChevronRight, HiOutlineClock } from "react-icons/hi";
+import Hero from "../components/homeComponent/Hero.jsx";
 
 const Packages = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -58,59 +59,15 @@ const Packages = () => {
 
   return (
     <div className="min-h-screen bg-[#f9fafb]">
-      {/* Refined Corporate Hero Header */}
-      <div className="relative pt-44 pb-36 px-6 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(220,38,38,0.1),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(37,99,235,0.05),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-            <div className="text-left max-w-3xl">
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3 mb-6"
-              >
-                <span className="w-10 h-px bg-red-600"></span>
-                <span className="text-red-600 font-bold uppercase tracking-[0.4em] text-[10px]">World-Class Itineraries</span>
-              </motion.div>
-
-              <motion.h1 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-5xl md:text-8xl font-black text-white tracking-tight leading-[0.9] mb-8"
-              >
-                Curated <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-400">Collections</span>
-              </motion.h1>
-
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-slate-400 text-lg md:text-xl font-medium leading-relaxed max-w-2xl"
-              >
-                Explore a hand-picked selection of luxury travel packages designed by verified experts to deliver unforgettable experiences.
-              </motion.p>
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="hidden lg:block bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl"
-            >
-              <div className="text-white text-center">
-                <p className="text-4xl font-black text-red-600">500+</p>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">Verified Packages</p>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
+      <Hero 
+        page="Packages" 
+        title1="Signature" 
+        title2="Luxury" 
+        italicTitle="Collections." 
+        subtitle="Explore our meticulously curated portfolio of travel experiences. From private island escapes to high-altitude Himalayan retreats, our packages are designed for those who demand the finest in accommodation, logistics, and exclusive access to the world's most guarded secrets."
+        kicker="CURATED EXCLUSIVITY"
+        showForm={false}
+      />
 
       {/* Corporate Toolbar */}
       <div className="sticky top-0 bg-white/90 backdrop-blur-xl z-40 border-b border-slate-200 py-6 shadow-sm">

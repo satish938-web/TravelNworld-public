@@ -27,13 +27,13 @@ const NavBar = () => {
         <div className="flex justify-between items-center h-20">
 
           {/* Logo */}
-          <NavLink to="/" onClick={() => setOpen(false)} className="flex-shrink-0">
+          <a href="/" onClick={() => setOpen(false)} className="flex-shrink-0">
             <img src={logo} alt="Logo" className="h-16" />
-          </NavLink>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6 items-center justify-center flex-1 ml-10">
-            <NavLink to="/" className={navLinkClass}>Home</NavLink>
+            <NavLink to="/" end className={navLinkClass}>Home</NavLink>
             <NavLink to="/aboutUs" className={navLinkClass}>About us</NavLink>
             <NavLink to="/agents" className={navLinkClass}>Agents</NavLink>
             <NavLink to="/packages" className={navLinkClass}>Packages</NavLink>
@@ -77,7 +77,7 @@ const NavBar = () => {
       {/* Mobile Dropdown */}
       {open && (
         <div className="md:hidden bg-white px-4 pt-4 pb-6 shadow flex flex-col space-y-4 transition-all duration-300 ease-in-out">
-          <NavLink to="/" onClick={() => setOpen(false)} className={navLinkClass}>Home</NavLink>
+          <NavLink to="/" end onClick={() => setOpen(false)} className={navLinkClass}>Home</NavLink>
           <NavLink to="/aboutUs" onClick={() => setOpen(false)} className={navLinkClass}>About us</NavLink>
           <NavLink to="/agents" onClick={() => setOpen(false)} className={navLinkClass}>Agents</NavLink>
           <NavLink to="/packages" onClick={() => setOpen(false)} className={navLinkClass}>Packages</NavLink>
