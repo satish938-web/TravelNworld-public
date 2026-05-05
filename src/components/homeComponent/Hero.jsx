@@ -152,6 +152,7 @@ const Hero = ({
 
   useEffect(() => {
     const fetchHeroVideos = async () => {
+      setLoading(true);
       try {
         const response = await fetch(`${API_BASE}/api/hero-videos?page=${page}`);
         if (response.ok) {
@@ -162,14 +163,12 @@ const Hero = ({
               .sort((a, b) => (a.order || 0) - (b.order || 0))
               .map((v) => ({ ...v, id: v._id || v.id }));
             setHeroVideos(sortedVideos);
-          } else {
-            setHeroVideos([]);
+            setLoading(false);
           }
         }
       } catch {
-        setHeroVideos([]);
-      } finally {
-        setLoading(false);
+        console.error("Hero Fetch Error");
+        // Keep loading true for shimmer if backend is down
       }
     };
     fetchHeroVideos();
@@ -297,6 +296,10 @@ const Hero = ({
               alt="Hero Background"
               className="w-full h-full object-cover opacity-50 grayscale-[0.3]"
             />
+            {loading && (
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" 
+                   style={{ backgroundSize: '200% 100%', animation: 'vtc-shimmer 2s infinite' }} />
+            )}
           </div>
 
           {/* ── Video / Image Media ── */}
@@ -324,7 +327,7 @@ const Hero = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: isReady ? 1 : 0 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1.2, ease: "easeInOut" }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
                     className="absolute w-full h-full object-cover z-0"
                   />
                 );
@@ -337,7 +340,7 @@ const Hero = ({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
                   onLoad={() => setIsReady(true)}
                   className="absolute w-full h-full object-cover z-0 opacity-60"
                 />

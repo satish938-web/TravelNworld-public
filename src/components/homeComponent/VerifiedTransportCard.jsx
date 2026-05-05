@@ -58,30 +58,26 @@ const injectStyles = () => {
     }
     .vtc-card {
       background: #fff;
-      border-radius: 24px;
+      border-radius: 32px;
       overflow: hidden;
       position: relative;
       flex-shrink: 0;
       /* Responsive Widths */
-      width: calc(25% - 15px);
+      width: 320px;
       
       /* Animated rainbow border on hover via outline trick + pseudo */
-      border: 1.5px solid rgba(0,0,0,0.07);
+      border: 1px solid rgba(0,0,0,0.05);
       transition:
-        transform   0.55s cubic-bezier(0.22,1,0.36,1),
-        box-shadow  0.55s cubic-bezier(0.22,1,0.36,1),
-        border-color 0.4s ease;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        transform   0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow  0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.04);
       cursor: pointer;
     }
     .vtc-card:hover {
-      transform: translateY(-14px) scale(1.02);
-      border-color: rgba(220,38,38,0.45);
+      transform: translateY(-16px) scale(1.02);
       box-shadow:
-        0 30px 60px rgba(220,38,38,0.18),
-        0 10px 24px rgba(10,10,80,0.14),
-        0 0 0 1px rgba(220,38,38,0.12);
-      animation: vtc-glow-pulse 2s ease-in-out infinite;
+        0 40px 80px rgba(220,38,38,0.12),
+        0 15px 30px rgba(0,0,0,0.08);
     }
 
     /* Shimmer sweep on hover */
@@ -271,17 +267,17 @@ const injectStyles = () => {
 
     /* ─────────────────── Responsive Queries ─────────────────── */
     @media (max-width: 1200px) {
-      .vtc-card { width: calc(33.333% - 14px); }
+      .vtc-card { width: 300px; }
     }
     @media (max-width: 768px) {
-      .vtc-card { width: calc(33.333% - 14px); }
+      .vtc-card { width: 280px; }
     }
     @media (max-width: 480px) {
-      .vtc-card { width: calc(33.333% - 14px); }
-      .vtc-img-wrap { height: 130px; }
-      .vtc-body { padding: 8px; }
-      .vtc-cta { font-size: 9px; padding: 8px 0; }
-      .vtc-verified { font-size: 7px; padding: 3px 6px; top: 8px; left: 8px; }
+      .vtc-card { width: 260px; }
+      .vtc-img-wrap { height: 180px; }
+      .vtc-body { padding: 15px; }
+      .vtc-cta { font-size: 11px; padding: 12px 0; }
+      .vtc-verified { font-size: 8px; padding: 4px 10px; top: 12px; left: 12px; }
     }
   `;
   document.head.appendChild(s);
@@ -398,9 +394,21 @@ const Empty = () => (
   </div>
 );
 
+const CardSkeleton = () => (
+  <div className="vtc-card animate-pulse" style={{ background: '#f3f4f6', width: 320, borderRadius: 32 }}>
+    <div className="vtc-img-wrap" style={{ background: '#e5e7eb', height: 215 }} />
+    <div className="vtc-body" style={{ background: '#fff', padding: '16px 17px 18px' }}>
+      <div style={{ height: 18, background: '#e5e7eb', borderRadius: 4, width: '80%', marginBottom: 8 }} />
+      <div style={{ height: 12, background: '#f3f4f6', borderRadius: 4, width: '60%', marginBottom: 15 }} />
+      <div style={{ height: 40, background: '#e5e7eb', borderRadius: 100, width: '100%' }} />
+    </div>
+  </div>
+);
+
 /* ══════════════════════════════════════════════ */
 const VerifiedTransportCard = () => {
   const [data, setData]                 = useState([]);
+  const [loading, setLoading]           = useState(true);
   const scrollRef                       = useRef(null);
   const rafRef                          = useRef(null);
   const pauseTimeout                    = useRef(null);
@@ -414,20 +422,27 @@ const VerifiedTransportCard = () => {
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const res = await axios.get(`${API_BASE}/api/agents/verified`);
-        setData((res.data.data || []).map(a => ({
-          id:       a._id,
-          slug:     (a.company || `${a.firstName}-${a.lastName}`).toLowerCase().replace(/\s+/g,"-"),
-          image:    a.photo || Facelessphoto,
-          fallback: Facelessphoto,
-          title:    a.company || `${a.firstName} ${a.lastName}`,
-          location: a.companyAddress
-            ? `${a.companyAddress.city}, ${a.companyAddress.state}`
-            : "",
-          rating: 4.5, reviews: 0,
-        })));
-      } catch { setData([]); }
+        if (res.data.data) {
+          setData(res.data.data.map(a => ({
+            id:       a._id,
+            slug:     (a.company || `${a.firstName}-${a.lastName}`).toLowerCase().replace(/\s+/g,"-"),
+            image:    a.photo || Facelessphoto,
+            fallback: Facelessphoto,
+            title:    a.company || `${a.firstName} ${a.lastName}`,
+            location: a.companyAddress
+              ? `${a.companyAddress.city}, ${a.companyAddress.state}`
+              : "",
+            rating: 4.5, reviews: 0,
+          })));
+          setLoading(false);
+        }
+      } catch {
+        setData([]);
+        // Keep loading true for skeletons if backend is down
+      }
     })();
   }, []);
 
@@ -500,11 +515,11 @@ const VerifiedTransportCard = () => {
               style={{
                 fontFamily:"'Outfit',sans-serif", fontWeight:900,
                 fontSize:"clamp(34px,5vw,52px)",
-                color:"#000", lineHeight:1.05,
+                color:"#000", lineHeight:1.0,
                 letterSpacing:"-.02em", margin:"0 0 14px",
               }}
             >
-              Verified{" "}
+              Verified<br />
               <span style={{ color:"#dc2626", fontWeight:300, fontStyle:"italic" }}>Travel Partners</span>
             </motion.h2>
 
@@ -541,7 +556,11 @@ const VerifiedTransportCard = () => {
         </div>
 
         {/* ── Cards ── */}
-        {data.length === 0 ? <Empty /> : (
+        {loading ? (
+          <div className="vtc-scroll" style={{ overflow: "hidden", padding: "14px 0 18px" }}>
+            {[...Array(4)].map((_, i) => <CardSkeleton key={i} />)}
+          </div>
+        ) : data.length === 0 ? <Empty /> : (
           <div
             ref={scrollRef}
             className="vtc-scroll"

@@ -13,6 +13,21 @@ const CARD_GAP = 20;
 
 
 
+const SkeletonCard = () => (
+  <div className="flex-shrink-0 w-[290px] flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 animate-pulse">
+    <div className="w-full h-48 bg-gray-200" />
+    <div className="p-5 flex flex-grow flex-col gap-3">
+      <div className="h-6 bg-gray-200 rounded-lg w-3/4" />
+      <div className="h-4 bg-gray-100 rounded-lg w-full" />
+      <div className="h-4 bg-gray-100 rounded-lg w-5/6" />
+      <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+        <div className="h-3 bg-gray-100 rounded-lg w-20" />
+        <div className="w-10 h-10 bg-gray-200 rounded-full" />
+      </div>
+    </div>
+  </div>
+);
+
 const DestinationCard = ({
   id,
   title,
@@ -95,6 +110,7 @@ const DestinationCard = ({
 
 const TrendingDestination = () => {
   const [destinations, setDestinations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,6 +126,7 @@ const TrendingDestination = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     getJson("/api/destinations/cards?category=trending&limit=100")
       .then((response) => {
         if (response?.data && Array.isArray(response.data)) {
@@ -120,9 +137,13 @@ const TrendingDestination = () => {
             images: dest.coverImageUrl ? [dest.coverImageUrl] : []
           }));
           setDestinations(formattedData);
+          setLoading(false);
         }
       })
-      .catch(err => console.error("Trending Fetch Error:", err));
+      .catch(err => {
+        console.error("Trending Fetch Error:", err);
+        // Note: We don't set loading(false) here so skeletons persist if backend is down
+      });
   }, []);
 
   useEffect(() => {
@@ -181,14 +202,34 @@ const TrendingDestination = () => {
     }
   };
 
+  // On mobile, show only one skeleton or carousel of skeletons
+  if (loading) {
+    return (
+      <div className="w-full py-24 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
+            <div className="h-10 w-48 bg-gray-200 rounded-lg animate-pulse" />
+            <div className="flex gap-2">
+              <div className="w-11 h-11 bg-gray-100 rounded-full animate-pulse" />
+              <div className="w-11 h-11 bg-gray-100 rounded-full animate-pulse" />
+            </div>
+          </div>
+          <div className="flex gap-5 overflow-hidden">
+            {[...Array(5)].map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (destinations.length === 0) return null;
 
   return (
-    <div className="w-full py-24 bg-white relative overflow-hidden">
-      <div className="max-w-[1800px] mx-auto px-6 relative z-10">
+    <div className="w-full py-24 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-8">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-16 gap-8">
           <div className="text-center md:text-left">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
@@ -197,22 +238,21 @@ const TrendingDestination = () => {
               className="flex items-center gap-3 mb-5 justify-center md:justify-start"
             >
               <span className="w-10 h-[2px] bg-red-600 rounded-full"></span>
-              <span className="text-red-600 font-bold uppercase tracking-[0.4em] text-[9px] font-['Poppins']">Editor's Selection</span>
+              <span className="text-gray-900 font-bold uppercase tracking-[0.4em] text-[10px] font-['Poppins']">Editor's Selection</span>
             </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-extrabold text-black tracking-tight mb-6 leading-[1.1] font-['Montserrat']"
+              className="text-4xl md:text-6xl font-black text-gray-900 tracking-tight mb-6 leading-[1.1] font-['Montserrat'] uppercase"
             >
-              Trending <span className="text-red-600 font-light">Destinations</span>
+              Trending <span className="text-red-600 italic">Destinations</span>
             </motion.h1>
             <motion.div 
               initial={{ width: 0 }}
-              whileInView={{ width: "100%" }}
+              whileInView={{ width: "200px" }}
               viewport={{ once: true }}
-              transition={{ duration: 1, ease: "circOut", delay: 0.3 }}
-              className="h-1.5 bg-gradient-to-r from-red-600 to-black rounded-full shadow-lg shadow-red-600/20 origin-left"
+              className="h-1.5 bg-red-600 rounded-full shadow-lg shadow-red-600/20 origin-left"
             ></motion.div>
           </div>
 
@@ -224,10 +264,10 @@ const TrendingDestination = () => {
               View Collection <span>→</span>
             </button>
             <div className="flex gap-2">
-              <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition" onClick={() => navClick("prev")}>
+              <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-red-600 hover:text-white transition shadow-sm" onClick={() => navClick("prev")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
               </button>
-              <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-black hover:text-white transition" onClick={() => navClick("next")}>
+              <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-red-600 hover:text-white transition shadow-sm" onClick={() => navClick("next")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5l7 7-7 7"/></svg>
               </button>
             </div>
@@ -268,9 +308,9 @@ const TrendingDestination = () => {
 
         {/* Live indicator */}
         {!isMobile && (
-          <div className="flex items-center gap-3 mt-10 opacity-30">
-            <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-            <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em]">
+          <div className="flex items-center gap-3 mt-10 opacity-60">
+            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+            <span className="text-[10px] text-white/80 font-black uppercase tracking-[0.3em]">
               {destinations.length} Collections Active
             </span>
           </div>

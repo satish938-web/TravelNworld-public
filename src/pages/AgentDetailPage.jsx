@@ -30,6 +30,8 @@ import { API_BASE, getImageUrl } from "../utils/api";
 
 import { trendingDestinations } from "../data/agentData";
 
+import toast from 'react-hot-toast';
+
 const AgentDetailPage = () => {
   const { agencyId } = useParams();
   const navigate = useNavigate();
@@ -147,7 +149,7 @@ const AgentDetailPage = () => {
     } else {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      toast.success('Link copied to clipboard!');
     }
   };
 
@@ -643,12 +645,15 @@ const AgentDetailPage = () => {
                         Our Services & Highlights
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(agent.services || "").split(",").map((item, i) => item.trim() && (
-                          <div key={i} className="flex items-start bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
-                            <FaCheck className="text-green-500 mr-3 mt-1 flex-shrink-0" />
-                            <span className="text-gray-700 font-medium">{item}</span>
-                          </div>
-                        ))}
+                        {(Array.isArray(agent.services) ? agent.services : (agent.services || "").split(",")).map((item, i) => {
+                          const trimmedItem = typeof item === 'string' ? item.trim() : item;
+                          return trimmedItem && (
+                            <div key={i} className="flex items-start bg-green-50 p-4 rounded-xl border border-green-100 shadow-sm">
+                              <FaCheck className="text-green-500 mr-3 mt-1 flex-shrink-0" />
+                              <span className="text-gray-700 font-medium">{trimmedItem}</span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

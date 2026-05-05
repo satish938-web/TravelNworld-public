@@ -288,6 +288,7 @@ const Header = ({ travelItem }) => {
             {[
               { label: "Overview", href: "#overview", show: true },
               { label: "Packages", href: "#packages", show: true },
+              { label: "Services", href: "#services", show: true },
               { label: "Gallery", href: "#gallery", show: true },
               { label: "Reviews", href: "#reviews", show: true },
               { label: "Branches", href: "#branches", show: true },

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { API_BASE } from "../utils/api";
 
 const countryCodes = [
@@ -12,7 +12,7 @@ const countryCodes = [
   { code: "+49", label: "GER" },
   { code: "+33", label: "FRA" },
   { code: "+39", label: "ITA" },
-  { code: "+86", label: "CHN" },
+  { code: "+8 China", label: "CHN" },
   { code: "+7", label: "RUS" },
   { code: "+82", label: "KOR" },
   { code: "+65", label: "SGP" },
@@ -91,6 +91,7 @@ const EnquiryForm = ({ variant = "transparent" }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const loadToast = toast.loading("Submitting enquiry...");
     try {
       const response = await fetch(`${API_BASE}/api/enquiries`, {
         method: "POST",
@@ -99,13 +100,13 @@ const EnquiryForm = ({ variant = "transparent" }) => {
       });
       const result = await response.json();
       if (response.ok) {
-        Swal.fire({ icon: "success", title: "Submitted!", text: "Your enquiry has been submitted successfully." });
+        toast.success("Enquiry submitted successfully!", { id: loadToast });
         setFormData({ name: "", company_name: "", phone: "", countryCode: "+91", email: "", location: "", your_requirements: "", agree: false });
       } else {
-        Swal.fire({ icon: "error", title: "Error!", text: result.message || "Something went wrong. Please try again." });
+        toast.error(result.message || "Something went wrong. Please try again.", { id: loadToast });
       }
     } catch {
-      Swal.fire({ icon: "error", title: "Network Error", text: "Unable to connect to the server. Please try again later." });
+      toast.error("Network Error: Unable to connect to the server.", { id: loadToast });
     }
   };
 

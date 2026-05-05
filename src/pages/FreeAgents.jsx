@@ -6,6 +6,7 @@ import TopMostBanner from '../components/homeComponent/TopMostBanner.jsx';
 import FacelessPhoto from '../assets/Facelessphoto.jpg'; 
 
 import { API_BASE } from '../utils/api';
+import { usePageHero } from '../hooks/usePageHero';
 
 const maskPhone = (phone) => {
   if (!phone || phone === 'Not provided') return 'Not provided';
@@ -35,7 +36,7 @@ const buildAgentCard = (agent) => {
   };
 };
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 2;
 
 const FreeAgents = () => {
   const [agents, setAgents] = useState([]);
@@ -44,6 +45,9 @@ const FreeAgents = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
+  const { mediaUrl, isVideo } = usePageHero('Agents');
+  const FALLBACK = "https://images.unsplash.com/photo-1556761175-5973dc0f32d7?q=80&w=1932&auto=format&fit=crop";
+  const displayUrl = mediaUrl || FALLBACK;
 
   useEffect(() => {
     const loadPublicAgents = async () => {
@@ -81,20 +85,34 @@ const FreeAgents = () => {
     <div className="pb-20 bg-[#f9fafb] min-h-screen font-sans text-left" style={{ fontFamily: 'var(--font-inter)' }}>
       <TopMostBanner />
       
-      <div className="max-w-7xl mx-auto px-6 mt-16">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-slate-200 pb-10">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-8 h-px bg-red-600"></span>
-              <span className="text-red-600 font-bold text-xs uppercase tracking-widest">Verified Network</span>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-              Registered Travel Partners
+      <div className="relative w-full h-[50vh] min-h-[400px] bg-slate-900 flex items-center justify-center overflow-hidden mb-16">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={displayUrl}
+            alt="Agents" 
+            className="w-full h-full object-cover opacity-20 grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent" />
+        </div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/10 border border-red-500/20 text-red-500 text-xs font-bold uppercase tracking-widest mb-4">
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
+              Verified Network
+            </span>
+            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-4 font-['Montserrat']">
+              Global Travel <br/>
+              <span className="text-slate-400 font-light">Partners.</span>
             </h1>
-            <p className="text-slate-500 mt-2 text-base max-w-2xl">
-              Explore our network of registered travel partners committed to delivering quality experiences.
+            <p className="text-slate-300 text-lg font-light leading-relaxed max-w-xl">
+              Connect with our elite network of registered travel experts. Every partner is thoroughly vetted to ensure unparalleled service and exclusive access for your journeys.
             </p>
           </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
 
           <div className="w-full md:w-80">
             <div className="relative">

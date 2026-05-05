@@ -121,7 +121,6 @@ const App = () => {
           <Route path="/verified-transport-details/:id/packages" element={<CustomerTourPackages />} />
           <Route path="/verified-transport-details/:id/reviews" element={<CustomerVerifiedReview />} />
           <Route path='/trending-destination-list' element={<TrendingDestinationLists />} />
-          <Route path='/international' element={<InternationalDestinationsList />} />
           <Route path='/international-itinerary/:destinationId' element={<InternationalItinerary />} />
           <Route path='/international-itinerary-detail/:destinationId/:itineraryId' element={<InternationalItineraryDetailPage />} />
           <Route path='/domestic' element={<DomesticDestinationsList />} />

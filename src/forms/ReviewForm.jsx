@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 import { uploadToS3 } from "../utils/s3Upload";
 
 const tags = [
@@ -30,10 +30,7 @@ const ReviewForm = ({ isOpen, onClose, rating, onSubmit, agentId}) => {
     const files = Array.from(e.target.files);
 
     if (files.length + uploadedImages.length > 5) {
-      Swal.fire({
-        icon: "error",
-        title: "Maximum 5 images allowed",
-      });
+      toast.error("Maximum 5 images allowed");
       return;
     }
 
@@ -54,77 +51,47 @@ const ReviewForm = ({ isOpen, onClose, rating, onSubmit, agentId}) => {
     });
   };
   const handleSubmit = async () => {
-    Swal.fire({
-      title: '<span style="color:#2563EB">Submit Review?</span>',
-      html: `
-        <p><strong>Selected Tags:</strong> ${selectedTags.length ? selectedTags.join(", ") : "None"}</p>
-        <p><strong>Uploaded Images:</strong> ${uploadedImages.length}</p>
-        <p><strong>Experience:</strong> ${experienceText || "No text provided"}</p>
-      `,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, submit',
-      cancelButtonText: 'Cancel',
-      customClass: {
-        popup: 'rounded-lg shadow-lg',
-        icon: 'text-orange-600',
-        confirmButton: 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700',
-        cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2',
-      },
-      buttonsStyling: false,
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          Swal.fire({
-            title: 'Uploading...',
-            text: 'Please wait while we upload your images',
-            allowOutsideClick: false,
-            didOpen: () => {
-              Swal.showLoading();
-            }
-          });
+    if (!guestName.trim() || !experienceText.trim()) {
+      toast.error("Please provide your name and experience details");
+      return;
+    }
 
-          // Upload images to S3 first
-          const imageKeys = [];
-          for (const item of uploadedImages) {
-            const folder = agentId ? `agents/${agentId}/reviews/public` : "reviews/public";
-            const key = await uploadToS3(item.file, folder);
-            imageKeys.push(key);
-          }
+    // Since we want to replace Swal's confirmation, we can use a simple window.confirm or just proceed
+    if (!window.confirm("Submit your review?")) return;
 
-          if (onSubmit) {
-            await onSubmit({
-              rating: currentRating,
-              userName: guestName,
-              tags: selectedTags,
-              text: experienceText,
-              images: imageKeys,
-            });
-          }
+    const loadToast = toast.loading("Submitting your review...");
 
-          Swal.fire({
-            icon: 'success',
-            title: 'Submitted!',
-            text: 'Your review has been submitted.',
-            confirmButtonColor: '#2563EB',
-          });
-
-          // Reset form
-          onClose();
-          setSelectedTags([]);
-          setUploadedImages([]);
-          setExperienceText('');
-          setGuestName('');
-        } catch (error) {
-          console.error("Review submission error:", error);
-          Swal.fire({
-            icon: 'error',
-            title: 'Upload Failed',
-            text: 'Failed to upload images. Please try again.',
-          });
-        }
+    try {
+      // Upload images to S3 first
+      const imageKeys = [];
+      for (const item of uploadedImages) {
+        const folder = agentId ? `agents/${agentId}/reviews/public` : "reviews/public";
+        const key = await uploadToS3(item.file, folder);
+        imageKeys.push(key);
       }
-    });
+
+      if (onSubmit) {
+        await onSubmit({
+          rating: currentRating,
+          userName: guestName,
+          tags: selectedTags,
+          text: experienceText,
+          images: imageKeys,
+        });
+      }
+
+      toast.success("Review submitted successfully!", { id: loadToast });
+
+      // Reset form
+      onClose();
+      setSelectedTags([]);
+      setUploadedImages([]);
+      setExperienceText('');
+      setGuestName('');
+    } catch (error) {
+      console.error("Review submission error:", error);
+      toast.error("Failed to submit review. Please try again.", { id: loadToast });
+    }
   };
 
 

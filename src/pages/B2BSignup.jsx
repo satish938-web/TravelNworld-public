@@ -10,6 +10,8 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 import { API_BASE } from "../utils/api";
 
+import toast from "react-hot-toast";
+
 const B2BSignup = () => {
   const navigate = useNavigate();
 
@@ -22,20 +24,15 @@ const B2BSignup = () => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isOtpSent, setIsOtpSent] = useState(false);
-const [otp, setOtp] = useState("");
-
-
+  const [otp, setOtp] = useState("");
 
   const handleInputChange = (key, value) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
-    setFormError("");
   };
 
   const validateForm = () => {
@@ -54,7 +51,7 @@ const [otp, setOtp] = useState("");
     else if (password !== confirmPassword) e.confirmPassword = "Passwords do not match";
 
     if (Object.keys(e).length > 0) {
-      setFormError(Object.values(e)[0]);
+      toast.error(Object.values(e)[0]);
       return false;
     }
     return true;
@@ -71,110 +68,104 @@ const [otp, setOtp] = useState("");
 
     const apiBase = API_BASE;
 
-  try {
-    const res = await fetch(`${apiBase}/api/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const errJson = await res.json().catch(async () => {
-        const text = await res.text().catch(() => "");
-        return { message: text };
+    try {
+      const res = await fetch(`${apiBase}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
-      throw new Error(errJson.message || errJson.error || `Signup failed with status ${res.status}`);
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(async () => {
+          const text = await res.text().catch(() => "");
+          return { message: text };
+        });
+        throw new Error(errJson.message || errJson.error || `Signup failed with status ${res.status}`);
+      }
+
+      const signupResult = await res.json();
+      return signupResult;
+    } catch (err) {
+      console.error("Signup error:", err.message);
+      throw err;
     }
-
-    const signupResult = await res.json();
-
- 
-
-// ✅ return success to trigger OTP UI
-return signupResult;
-  } catch (err) {
-    console.error("Signup error:", err.message);
-    throw err;
-  }
-};
-
-
-
+  };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
+    e.preventDefault();
+    if (!validateForm()) return;
 
-  setIsSubmitting(true);
-  setFormError("");
+    setIsSubmitting(true);
 
-  try {
-    const apiBase = API_BASE;
+    try {
+      const apiBase = API_BASE;
 
-    if (!isOtpSent) {
-      //  STEP 1: SIGNUP
-      await signup(formData);
+      if (!isOtpSent) {
+        //  STEP 1: SIGNUP
+        await signup(formData);
 
-      //  STEP 2: SEND OTP (via login API)
-      const res = await fetch(`${apiBase}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+        //  STEP 2: SEND OTP (via login API)
+        const res = await fetch(`${apiBase}/api/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.otpSent) {
-        setIsOtpSent(true); // ✅ SWITCH UI
-        return;
-      } else {
-        throw new Error("OTP not sent");
-      }
-    } else {
-      // 🔥 STEP 3: VERIFY OTP
-      const res = await fetch(`${apiBase}/api/auth/verify-otp`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          otp: otp,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.accessToken) {
-        const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-        localStorage.setItem("token", data.accessToken);
-        localStorage.setItem("tokenExpiry", String(expiry));
-        localStorage.setItem("role", data.user.role);
-        localStorage.setItem("isProfileComplete", String(data.user.isProfileComplete));
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        if (!data.user.isProfileComplete) {
-          navigate("/agent/profile");
+        if (data.otpSent) {
+          setIsOtpSent(true); 
+          toast.success("OTP sent to your email!");
+          return;
         } else {
-          navigate("/agent/");
+          throw new Error(data.message || "OTP not sent");
         }
       } else {
-        throw new Error("Invalid OTP");
+        // 🔥 STEP 3: VERIFY OTP
+        const res = await fetch(`${apiBase}/api/auth/verify-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            otp: otp,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.accessToken) {
+          const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+          localStorage.setItem("token", data.accessToken);
+          localStorage.setItem("tokenExpiry", String(expiry));
+          localStorage.setItem("role", data.user.role);
+          localStorage.setItem("isProfileComplete", String(data.user.isProfileComplete));
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          toast.success("Account created successfully!");
+          if (!data.user.isProfileComplete) {
+            navigate("/agent/profile");
+          } else {
+            navigate("/agent/");
+          }
+        } else {
+          throw new Error(data.message || "Invalid OTP");
+        }
       }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
-  } catch (err) {
-    setFormError(err.message);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
 
 //   const handleVerifyOtp = async () => {
 //   try {
@@ -245,13 +236,6 @@ return signupResult;
             ? `OTP sent to ${formData.email}`
             : "Create your agent account on HelloTravel"}
         </p>
-
-        {/* Error */}
-        {formError && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-            {formError}
-          </div>
-        )}
 
         {/* EMAIL (Always visible) */}
         <div>

@@ -36,7 +36,7 @@ function ShareButton({ title, text, url }) {
       {/* Share button */}
       <button
         onClick={handleShare}
-        className="text-blue-800 hover:text-orange-500 text-xl cursor-pointer"
+        className="text-slate-900 hover:text-red-600 text-xl cursor-pointer transition-colors duration-300"
         title="Share this post"
         aria-label="Share this post"
       >
@@ -46,7 +46,7 @@ function ShareButton({ title, text, url }) {
       {/* Print button */}
       <button
         onClick={handlePrint}
-        className="text-blue-800 hover:text-orange-500 text-xl cursor-pointer"
+        className="text-slate-900 hover:text-red-600 text-xl cursor-pointer transition-colors duration-300"
         title="Print this post"
         aria-label="Print this post"
       >

@@ -13,6 +13,8 @@ import {
   Film,
 } from "lucide-react";
 
+import toast from "react-hot-toast";
+
 const LeftSidebar = () => {
   const [accountOpen, setAccountOpen] = useState(false);
   const [itinerariesOpen,setItinerariesOpen]=useState(false)
@@ -58,7 +60,7 @@ const LeftSidebar = () => {
   const handleRestrictedClick = (e) => {
     if (!isProfileComplete) {
       e.preventDefault();
-      alert("Please complete your profile (Company Address) to unlock all features.");
+      toast.error("Please complete your profile (Company Address) to unlock all features.");
     }
   };
 

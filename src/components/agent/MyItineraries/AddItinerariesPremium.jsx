@@ -12,6 +12,7 @@ import MediaUploader from "../MyAccount/MediaUploader";
 import { getS3Path } from "../../../utils/pathUtils";
 import { API_BASE } from "../../../utils/api";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 /* ─── Constants ─────────────────────────────────────────────────────────── */
 const DURATION_OPTIONS = [
@@ -244,8 +245,6 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
   const [agentName, setAgentName] = useState("agent");
   const [agentId, setAgentId] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [submitError,   setSubmitError]   = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState("");
 
   const [activePolicyTab, setActivePolicyTab] = useState("Inclusions");
 
@@ -282,7 +281,7 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
       setDomesticDestinations(domRes.data.data      || []);
       setInternationalDestinations(intRes.data.data || []);
     } catch (err) {
-      setDestinationsError("Could not load destinations.");
+      toast.error("Could not load destinations.");
     } finally {
       setDestinationsLoading(false);
     }
@@ -321,7 +320,7 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
       }
     } catch (err) {
       console.error("Error fetching itinerary for edit", err);
-      setSubmitError("Failed to load itinerary for editing.");
+      toast.error("Failed to load itinerary for editing.");
     }
   }, [id, getAuthToken]);
 
@@ -348,12 +347,12 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
   const handleDeleteDay = (id) => setDays(prev => prev.filter(d => d.id !== id));
 
   const handleSubmit = async () => {
-    if (!title.trim())  { setSubmitError("Itinerary title is required.");  return; }
-    if (!destination)   { setSubmitError("Please select a destination."); return; }
-    if (!duration)      { setSubmitError("Please select a duration.");    return; }
+    if (!title.trim())  { toast.error("Itinerary title is required.");  return; }
+    if (!destination)   { toast.error("Please select a destination."); return; }
+    if (!duration)      { toast.error("Please select a duration.");    return; }
 
     const token = getAuthToken();
-    if (!token) { setSubmitError("Please log in."); return; }
+    if (!token) { toast.error("Please log in."); return; }
 
     const payload = {
       title:             title.trim(),
@@ -379,9 +378,9 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
       agentId: agentId || undefined,
     };
 
+    const loadToast = toast.loading(isEditMode ? "Updating itinerary..." : "Publishing itinerary...");
     try {
       setSubmitLoading(true);
-      setSubmitError("");
 
       let response;
       if (isEditMode) {
@@ -390,13 +389,13 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
         response = await axios.put(editEndpoint, payload, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
-        setSubmitSuccess("Itinerary updated successfully!");
+        toast.success("Itinerary updated successfully!", { id: loadToast });
       } else {
         const createEndpoint = `${API_BASE}/api/agent-itineraries`;
         response = await axios.post(createEndpoint, payload, {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         });
-        setSubmitSuccess("Itinerary created successfully! It is now live.");
+        toast.success("Itinerary created successfully! It is now live.", { id: loadToast });
         // Reset form
         setTitle(""); setDestination(""); setDuration(""); setThemes([]);
         setClassification([]); setPackageType("Flexible"); setVisibility("Public");
@@ -409,9 +408,8 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
 
       if (onSubmit) onSubmit(response.data.data);
       if (refreshItineraries) refreshItineraries();
-      setTimeout(() => setSubmitSuccess(""), 4000);
     } catch (err) {
-      setSubmitError(err.response?.data?.message || (isEditMode ? "Failed to update itinerary." : "Failed to create itinerary."));
+      toast.error(err.response?.data?.message || (isEditMode ? "Failed to update itinerary." : "Failed to create itinerary."), { id: loadToast });
     } finally {
       setSubmitLoading(false);
     }
@@ -431,9 +429,6 @@ const AddItinerariesPremium = ({ onSubmit, initialData = null, isModal = false }
             <StatCard label="Days Planned" value={days.length} color="#16a34a" />
             <StatCard label="Sections Done" value={completedSections} color="#dc2626" />
           </div>
-
-          {submitError && <Alert type="error" msg={submitError} onClose={() => setSubmitError("")} />}
-          {submitSuccess && <Alert type="success" msg={submitSuccess} />}
 
           <Section icon={HiOutlineViewBoards} title="Core Details" step="1">
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 20 }}>

@@ -1,10 +1,9 @@
-// src/components/Footer.jsx
-
 import React, { useState } from 'react';
 import { FaFacebookF, FaInstagram, FaYoutube } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 import logo from '../assets/images/logo/logo.png';
+
 const Footer = () => {
   const [email, setEmail] = useState('');
 
@@ -16,31 +15,16 @@ const Footer = () => {
     e.preventDefault();
 
     if (!email) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Email Required',
-        text: 'Please enter your email address.',
-      });
+      toast.error('Please enter your email address.');
       return;
     }
 
     if (!validateEmail(email)) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Invalid Email',
-        text: 'Please enter a valid email address.',
-      });
+      toast.error('Please enter a valid email address.');
       return;
     }
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Subscription Successful!',
-      text: 'You are now subscribed to TravelInworld. ',
-      timer: 2500,
-      showConfirmButton: false,
-    });
-
+    toast.success('Subscription Successful! Welcome to the elite list.');
     setEmail('');
   };
   return (

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
-
 import axios from 'axios';
 import { API_BASE } from '../utils/api';
 
@@ -55,26 +54,17 @@ const ContactForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please correct the highlighted fields.',
-        icon: 'error',
-        confirmButtonColor: '#dc2626',
-      });
+      toast.error('Please correct the highlighted fields.');
       return;
     }
 
     setIsSubmitting(true);
+    const loadingToast = toast.loading('Sending your message...');
     try {
       const response = await axios.post(`${API_BASE}/api/contacts`, formData);
       
       if (response.data.success) {
-        Swal.fire({
-          title: 'Success!',
-          text: response.data.message || 'Your message has been sent.',
-          icon: 'success',
-          confirmButtonColor: '#2563eb',
-        });
+        toast.success(response.data.message || 'Your message has been sent successfully!', { id: loadingToast });
 
         setFormData({
           firstName: '',
@@ -86,12 +76,7 @@ const ContactForm = () => {
       }
     } catch (error) {
       console.error("Submission error:", error);
-      Swal.fire({
-        title: 'Error!',
-        text: error.response?.data?.message || 'Something went wrong. Please try again later.',
-        icon: 'error',
-        confirmButtonColor: '#dc2626',
-      });
+      toast.error(error.response?.data?.message || 'Something went wrong. Please try again later.', { id: loadingToast });
     } finally {
       setIsSubmitting(false);
     }

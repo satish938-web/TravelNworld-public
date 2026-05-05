@@ -4,136 +4,293 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { API_BASE } from "../../utils/api";
 
-/* ── Floating background orbs ── */
+/* ── Animated floating particles ── */
+const Particles = () => {
+  const particles = Array.from({ length: 18 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 4 + 2,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    duration: Math.random() * 12 + 8,
+    delay: Math.random() * 6,
+  }));
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      {particles.map(p => (
+        <div
+          key={p.id}
+          style={{
+            position: "absolute",
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: p.size,
+            height: p.size,
+            borderRadius: "50%",
+            background: "rgba(220,38,38,0.25)",
+            animation: `particleFloat ${p.duration}s ${p.delay}s ease-in-out infinite alternate`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+/* ── Background orbs ── */
 const Orbs = () => (
   <>
     <div style={{
-      position: "absolute", top: "10%", left: "-5%",
-      width: 400, height: 400, borderRadius: "50%",
-      background: "radial-gradient(circle, rgba(220,38,38,0.08) 0%, transparent 70%)",
-      filter: "blur(40px)", pointerEvents: "none",
-      animation: "orbDrift 8s ease-in-out infinite alternate",
+      position: "absolute", top: "5%", left: "-8%",
+      width: 500, height: 500, borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(220,38,38,0.1) 0%, transparent 70%)",
+      filter: "blur(50px)", pointerEvents: "none",
+      animation: "orbDrift 10s ease-in-out infinite alternate",
     }} />
     <div style={{
-      position: "absolute", bottom: "5%", right: "-5%",
-      width: 500, height: 500, borderRadius: "50%",
-      background: "radial-gradient(circle, rgba(220,38,38,0.06) 0%, transparent 70%)",
+      position: "absolute", bottom: "0%", right: "-8%",
+      width: 600, height: 600, borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(220,38,38,0.07) 0%, transparent 70%)",
+      filter: "blur(70px)", pointerEvents: "none",
+      animation: "orbDrift 14s ease-in-out 3s infinite alternate",
+    }} />
+    <div style={{
+      position: "absolute", top: "50%", left: "50%",
+      transform: "translate(-50%,-50%)",
+      width: 800, height: 300, borderRadius: "50%",
+      background: "radial-gradient(ellipse, rgba(220,38,38,0.04) 0%, transparent 70%)",
       filter: "blur(60px)", pointerEvents: "none",
-      animation: "orbDrift 11s ease-in-out 2s infinite alternate",
+      animation: "orbDrift 18s ease-in-out 1s infinite alternate",
     }} />
   </>
 );
 
+/* ── Grid background ── */
 const GridBg = () => (
   <div style={{
     position: "absolute", inset: 0, pointerEvents: "none",
     backgroundImage: `
-      linear-gradient(rgba(220,38,38,0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(220,38,38,0.035) 1px, transparent 1px)
+      linear-gradient(rgba(220,38,38,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(220,38,38,0.04) 1px, transparent 1px)
     `,
-    backgroundSize: "50px 50px",
+    backgroundSize: "52px 52px",
   }} />
 );
 
-const TestimonialCard = ({ image, name, role, text, stars = 5, type, videoUrl, location }) => {
+/* ── Animated stat counter ── */
+const AnimatedStat = ({ num, label, delay = 0 }) => {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      transition={{ duration: 0.6, delay, type: "spring", stiffness: 120 }}
+      whileHover={{ scale: 1.06, boxShadow: "0 8px 32px rgba(220,38,38,0.18)" }}
+      style={{
+        display: "flex", alignItems: "center", gap: 14,
+        background: "#fff",
+        border: "1px solid rgba(220,38,38,0.15)",
+        borderRadius: 999, padding: "14px 28px",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
+        cursor: "default",
+        transition: "box-shadow 0.3s",
+      }}
+    >
+      <span style={{
+        fontFamily: "'Bebas Neue', cursive",
+        fontSize: 28, color: "#dc2626", lineHeight: 1,
+        letterSpacing: "0.04em",
+      }}>{num}</span>
+      <span style={{
+        fontFamily: "'Barlow', sans-serif", fontWeight: 700, fontSize: 10,
+        letterSpacing: "0.3em", textTransform: "uppercase", color: "#9ca3af",
+      }}>{label}</span>
+    </motion.div>
+  );
+};
+
+/* ── Testimonial card ── */
+const TestimonialCard = ({ image, name, role, text, stars = 5, type, videoUrl, location, index = 0 }) => {
   const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0 });
 
   return (
-    <div
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 1, y: 0 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.3 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         position: "relative",
-        width: 360,
-        flexShrink: 0,
-        margin: "0 20px",
+        width: 360, flexShrink: 0,
+        margin: "0 16px",
         zIndex: hovered ? 10 : 1,
-        background: hovered ? "linear-gradient(145deg, #0f0f0f 0%, #1a0505 100%)" : "#fff",
+        background: hovered
+          ? "linear-gradient(145deg, #0a0a0a 0%, #1c0505 60%, #0f0f0f 100%)"
+          : "#ffffff",
         borderRadius: "28px",
         padding: "32px",
         boxShadow: hovered
-          ? "0 30px 80px rgba(220,38,38,0.25), 0 0 0 1px rgba(220,38,38,0.35)"
-          : "0 8px 40px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
-        transform: hovered ? "translateY(-10px) scale(1.02)" : "translateY(0) scale(1)",
-        transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+          ? "0 40px 100px rgba(220,38,38,0.3), 0 0 0 1px rgba(220,38,38,0.4), inset 0 1px 0 rgba(255,255,255,0.05)"
+          : "0 4px 30px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
+        transform: hovered ? "translateY(-14px) scale(1.03)" : "translateY(0) scale(1)",
+        transition: "all 0.45s cubic-bezier(0.34,1.56,0.64,1)",
         overflow: "hidden",
         cursor: "default",
       }}
     >
-      <div style={{
-        position: "absolute", top: -10, right: 16,
-        fontFamily: "'Bebas Neue', cursive",
-        fontSize: 140, lineHeight: 1,
-        color: hovered ? "rgba(220,38,38,0.12)" : "rgba(220,38,38,0.06)",
-        userSelect: "none", pointerEvents: "none",
-      }}>"</div>
-
+      {/* Top accent bar */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0,
-        height: hovered ? 3 : 0,
-        background: "linear-gradient(90deg, #dc2626, #ff6666)",
+        height: hovered ? 4 : 0,
+        background: "linear-gradient(90deg, #7f1d1d, #dc2626, #ff6b6b, #dc2626, #7f1d1d)",
+        backgroundSize: "200% 100%",
         borderRadius: "28px 28px 0 0",
-        transition: "all 0.3s ease",
+        transition: "height 0.35s ease",
+        animation: hovered ? "shimmer 2.5s linear infinite" : "none",
       }} />
 
+      {/* Corner glow */}
+      {hovered && (
+        <div style={{
+          position: "absolute", bottom: -30, right: -30,
+          width: 160, height: 160, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(220,38,38,0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+      )}
+
+      {/* Large decorative quote */}
+      <div style={{
+        position: "absolute", top: -8, right: 14,
+        fontFamily: "Georgia, serif",
+        fontSize: 160, lineHeight: 1,
+        color: hovered ? "rgba(220,38,38,0.14)" : "rgba(220,38,38,0.05)",
+        userSelect: "none", pointerEvents: "none",
+        transition: "color 0.4s",
+      }}>"</div>
+
+      {/* Stars + video */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <div style={{ display: "flex", gap: 3 }}>
+        <div style={{ display: "flex", gap: 4 }}>
           {[...Array(5)].map((_, i) => (
-            <Star key={i} size={14} fill={i < stars ? "#dc2626" : (hovered ? "rgba(255,255,255,0.15)" : "#e5e7eb")} color="transparent" />
+            <motion.div
+              key={i}
+              initial={{ scale: 0 }}
+              animate={inView ? { scale: 1 } : {}}
+              transition={{ delay: 0.3 + i * 0.07, type: "spring", stiffness: 200 }}
+            >
+              <Star
+                size={14}
+                fill={i < stars ? "#dc2626" : (hovered ? "rgba(255,255,255,0.12)" : "#e5e7eb")}
+                color="transparent"
+              />
+            </motion.div>
           ))}
         </div>
         {type === "video" && (
-          <a href={videoUrl} target="_blank" rel="noreferrer" style={{
-            background: "linear-gradient(135deg, #dc2626, #7f1d1d)",
-            color: "#fff", width: 36, height: 36, borderRadius: "50%",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
+          <a href={videoUrl} target="_blank" rel="noreferrer"
+            style={{
+              background: "linear-gradient(135deg, #dc2626, #7f1d1d)",
+              color: "#fff", width: 38, height: 38, borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 4px 16px rgba(220,38,38,0.4)",
+              transition: "transform 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = "scale(1.15)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+          >
             <PlayCircle size={18} />
           </a>
         )}
       </div>
 
+      {/* Quote icon */}
       <div style={{
-        width: 36, height: 36,
-        background: hovered ? "rgba(220,38,38,0.15)" : "rgba(220,38,38,0.08)",
-        borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16,
+        width: 38, height: 38,
+        background: hovered ? "rgba(220,38,38,0.2)" : "rgba(220,38,38,0.07)",
+        border: hovered ? "1px solid rgba(220,38,38,0.35)" : "1px solid rgba(220,38,38,0.12)",
+        borderRadius: 12,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        marginBottom: 16,
+        transition: "all 0.3s",
       }}>
         <Quote size={16} color="#dc2626" />
       </div>
 
+      {/* Review text */}
       <p style={{
-        fontFamily: "'Barlow', sans-serif", fontWeight: 300, fontSize: 14,
-        fontStyle: "italic", lineHeight: 1.8, minHeight: 90, marginBottom: 28,
-        color: hovered ? "rgba(255,255,255,0.75)" : "#6b7280",
+        fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+        fontSize: 14, fontStyle: "italic",
+        lineHeight: 1.85, minHeight: 95, marginBottom: 26,
+        color: hovered ? "rgba(255,255,255,0.72)" : "#6b7280",
+        transition: "color 0.4s",
       }}>
         "{text}"
       </p>
 
+      {/* Divider */}
+      <div style={{
+        height: 1,
+        background: hovered
+          ? "linear-gradient(90deg, transparent, rgba(220,38,38,0.3), transparent)"
+          : "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)",
+        marginBottom: 20,
+        transition: "background 0.4s",
+      }} />
+
+      {/* Avatar + name */}
       <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <img
-          src={image || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400"}
-          alt={name}
-          style={{
-            width: 48, height: 48, borderRadius: "50%", objectFit: "cover",
-            border: hovered ? "2px solid rgba(220,38,38,0.6)" : "2px solid rgba(220,38,38,0.15)",
-          }}
-        />
+        <div style={{ position: "relative" }}>
+          <img
+            src={image || "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400"}
+            alt={name}
+            style={{
+              width: 50, height: 50, borderRadius: "50%", objectFit: "cover",
+              border: hovered ? "2px solid #dc2626" : "2px solid rgba(220,38,38,0.2)",
+              transition: "border 0.4s",
+            }}
+          />
+          {hovered && (
+            <div style={{
+              position: "absolute", inset: -3, borderRadius: "50%",
+              border: "1px solid rgba(220,38,38,0.3)",
+              animation: "ringPulse 1.5s ease-out infinite",
+            }} />
+          )}
+        </div>
         <div>
           <h3 style={{
-            fontFamily: "'Bebas Neue', cursive", fontSize: 17, letterSpacing: "0.08em",
-            color: hovered ? "#fff" : "#0a0a0a",
+            fontFamily: "'Bebas Neue', cursive", fontSize: 17,
+            letterSpacing: "0.1em",
+            color: hovered ? "#ffffff" : "#0a0a0a",
+            transition: "color 0.4s", margin: 0,
           }}>{name}</h3>
           <p style={{
-            fontFamily: "'Barlow', sans-serif", fontWeight: 700, fontSize: 9,
-            letterSpacing: "0.3em", textTransform: "uppercase",
-            color: hovered ? "rgba(220,38,38,0.8)" : "#9ca3af",
+            fontFamily: "'Barlow', sans-serif", fontWeight: 700,
+            fontSize: 9, letterSpacing: "0.3em", textTransform: "uppercase",
+            color: hovered ? "rgba(220,38,38,0.85)" : "#9ca3af",
+            transition: "color 0.4s", margin: "3px 0 0",
           }}>{role}</p>
+          {location && (
+            <p style={{
+              fontFamily: "'Barlow', sans-serif", fontSize: 10,
+              color: hovered ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.3)",
+              margin: "2px 0 0", transition: "color 0.4s",
+            }}>📍 {location}</p>
+          )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
+/* ══════════════════════════════════════
+   MAIN COMPONENT
+══════════════════════════════════════ */
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,14 +300,13 @@ const Testimonials = () => {
   const [slideKey, setSlideKey] = useState(0);
 
   const scrollRef1 = useRef(null);
-  const scrollRef2 = useRef(null);
   const rafRef1 = useRef(null);
   const pauseTimeout = useRef(null);
-  
   const isDragging = useRef(false);
   const startX = useRef(0);
   const scrollLeftRef = useRef(0);
   const activeRef = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -184,18 +340,12 @@ const Testimonials = () => {
   useEffect(() => {
     if (isMobile) return;
     const el1 = scrollRef1.current;
-    const el2 = scrollRef2.current;
     if (!el1) return;
-
     const step = () => {
       if (!isPaused && !isDragging.current) {
         if (el1) {
-          el1.scrollLeft += 0.8;
+          el1.scrollLeft += 0.7;
           if (el1.scrollLeft >= el1.scrollWidth / 2) el1.scrollLeft = 0;
-        }
-        if (el2) {
-          el2.scrollLeft -= 0.8;
-          if (el2.scrollLeft <= 0) el2.scrollLeft = el2.scrollWidth / 2;
         }
       }
       rafRef1.current = requestAnimationFrame(step);
@@ -207,30 +357,31 @@ const Testimonials = () => {
   const pause = () => { setIsPaused(true); clearTimeout(pauseTimeout.current); };
   const resume = (d = 1200) => { pauseTimeout.current = setTimeout(() => setIsPaused(false), d); };
 
-  const onMD = (e, ref) => { 
+  const onMD = (e, ref) => {
     activeRef.current = ref.current;
-    isDragging.current = true; 
-    startX.current = e.pageX - activeRef.current.offsetLeft; 
-    scrollLeftRef.current = activeRef.current.scrollLeft; 
-    pause(); 
+    isDragging.current = true;
+    startX.current = e.pageX - activeRef.current.offsetLeft;
+    scrollLeftRef.current = activeRef.current.scrollLeft;
+    pause();
   };
   const onMU = () => { isDragging.current = false; resume(); };
   const onML = () => { isDragging.current = false; resume(); };
-  const onMM = e => { 
-    if (!isDragging.current || !activeRef.current) return; 
-    e.preventDefault(); 
-    activeRef.current.scrollLeft = scrollLeftRef.current - (e.pageX - activeRef.current.offsetLeft - startX.current); 
+  const onMM = e => {
+    if (!isDragging.current || !activeRef.current) return;
+    e.preventDefault();
+    activeRef.current.scrollLeft = scrollLeftRef.current - (e.pageX - activeRef.current.offsetLeft - startX.current);
   };
 
   const navClick = dir => {
     if (isMobile) {
-      setCurrentIndex(p => dir === "next" ? (p + 1) % testimonials.length : (p - 1 + testimonials.length) % testimonials.length);
+      setCurrentIndex(p => dir === "next"
+        ? (p + 1) % testimonials.length
+        : (p - 1 + testimonials.length) % testimonials.length);
       setSlideKey(k => k + 1);
       pause(); resume(3000);
     } else {
-      const amt = dir === "next" ? 400 : -400; // Card (360) + Margin (20*2)
-      if (scrollRef1.current) scrollRef1.current.scrollBy({ left: amt, behavior: "smooth" });
-      if (scrollRef2.current) scrollRef2.current.scrollBy({ left: -amt, behavior: "smooth" });
+      const amt = dir === "next" ? 400 : -400;
+      scrollRef1.current?.scrollBy({ left: amt, behavior: "smooth" });
       pause(); resume();
     }
   };
@@ -239,135 +390,226 @@ const Testimonials = () => {
 
   return (
     <section style={{
-      width: "100%", padding: "110px 0 100px", background: "#f9f9f9",
+      width: "100%", padding: "80px 0 110px",
+      background: "linear-gradient(180deg, #fafafa 0%, #f3f3f3 50%, #fafafa 100%)",
       overflow: "hidden", position: "relative",
     }}>
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,700;1,300&display=swap');
+
         @keyframes orbDrift {
           from { transform: translate(0, 0) scale(1); }
-          to   { transform: translate(3%, 4%) scale(1.1); }
+          to   { transform: translate(4%, 5%) scale(1.12); }
         }
+        @keyframes shimmer {
+          0%   { background-position: 200% center; }
+          100% { background-position: -200% center; }
+        }
+        @keyframes particleFloat {
+          from { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+          to   { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+        }
+        @keyframes ringPulse {
+          0%   { transform: scale(1); opacity: 0.6; }
+          100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes headingReveal {
+          from { clip-path: inset(0 100% 0 0); }
+          to   { clip-path: inset(0 0% 0 0); }
+        }
+        @keyframes badgePulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
+          50%       { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+        }
+
         .nav-btn {
-          width: 44px; height: 44px; border-radius: 50%;
-          border: 1px solid #e5e7eb; display: flex;
-          align-items: center; justify-content: center;
-          color: #9ca3af; transition: all 0.3s;
-          background: white; cursor: pointer;
+          width: 48px; height: 48px; border-radius: 50%;
+          border: 1px solid rgba(0,0,0,0.1);
+          display: flex; align-items: center; justify-content: center;
+          color: #9ca3af; background: white; cursor: pointer;
+          transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+          box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
-        .nav-btn:hover { background: black; color: white; border-color: black; }
+        .nav-btn:hover {
+          background: #0a0a0a; color: white;
+          border-color: #0a0a0a;
+          transform: scale(1.12);
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .nav-btn:active { transform: scale(0.96); }
+
+        .scroll-row { display: flex; overflow-x: hidden; cursor: grab; padding: 24px 0; }
+        .scroll-row:active { cursor: grabbing; }
       `}</style>
+
       <GridBg />
       <Orbs />
+      <Particles />
 
-      <div style={{ maxWidth: 1600, margin: "0 auto", padding: "0 2rem", position: "relative", zIndex: 1 }}>
-        {/* Header with Buttons */}
-        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: "center", marginBottom: 64, gap: 24 }}>
-          <div style={{ textAlign: isMobile ? "center" : "left" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: isMobile ? "center" : "flex-start", marginBottom: 12 }}>
-              <span style={{ height: 3, width: 24, borderRadius: 99, background: "#dc2626" }} />
+      {/* ── Section header ── */}
+      <div
+        ref={headerRef}
+        style={{ maxWidth: 1600, margin: "0 auto", padding: "0 2rem", position: "relative", zIndex: 2, marginBottom: 72 }}
+      >
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 32,
+        }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4, type: "spring", stiffness: 100 }}
+            style={{ textAlign: "center" }}
+          >
+            {/* Label badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.05 }}
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                marginBottom: 16,
+              }}
+            >
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8,
+                background: "rgba(220,38,38,0.08)",
+                border: "1px solid rgba(220,38,38,0.2)",
+                borderRadius: 999, padding: "6px 16px",
+                animation: "badgePulse 2.5s ease-in-out infinite",
+              }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#dc2626" }} />
+                <span style={{
+                  fontFamily: "'Barlow', sans-serif", fontWeight: 700,
+                  fontSize: 10, letterSpacing: "0.4em", textTransform: "uppercase", color: "#dc2626",
+                }}>Testimonials</span>
+              </div>
+            </motion.div>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              style={{
+                fontFamily: "'Bebas Neue', cursive",
+                fontSize: "clamp(52px, 7vw, 88px)",
+                lineHeight: 0.92, margin: 0, letterSpacing: "0.01em",
+              }}
+            >
+              <span style={{ color: "#0a0a0a" }}>What Our </span>
+              <br />
               <span style={{
-                fontFamily: "'Barlow', sans-serif", fontWeight: 700, fontSize: 10,
-                letterSpacing: "0.45em", textTransform: "uppercase", color: "#dc2626",
-              }}>Testimonials</span>
-            </div>
-            <h2 style={{
-              fontFamily: "'Bebas Neue', cursive", fontSize: "clamp(48px, 6vw, 80px)",
-              lineHeight: 0.95, color: "#0a0a0a", letterSpacing: "0.01em", margin: 0
-            }}>
-              What Our <span style={{ color: "#dc2626", fontStyle: "italic" }}>Travelers Say</span>
-            </h2>
-          </div>
+                color: "#dc2626", fontStyle: "italic",
+                textShadow: "0 0 60px rgba(220,38,38,0.2)",
+              }}>Travelers Say</span>
+            </motion.h2>
 
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-             <button className="nav-btn" onClick={() => navClick("prev")}>
-               <ChevronLeft size={20} />
-             </button>
-             <button className="nav-btn" onClick={() => navClick("next")}>
-               <ChevronRight size={20} />
-             </button>
-          </div>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+              style={{
+                fontFamily: "'Barlow', sans-serif", fontWeight: 300,
+                fontSize: 15, color: "#9ca3af", marginTop: 14, maxWidth: 600,
+                lineHeight: 1.7, margin: "14px auto 0",
+              }}
+            >
+              Real stories from real travelers — experiences that inspire the next adventure.
+            </motion.p>
+          </motion.div>
+
+          {/* Center: nav buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2, type: "spring", stiffness: 100 }}
+            style={{ display: "flex", gap: 12, alignItems: "center" }}
+          >
+            <button className="nav-btn" onClick={() => navClick("prev")} aria-label="Previous">
+              <ChevronLeft size={20} />
+            </button>
+            <button className="nav-btn" onClick={() => navClick("next")} aria-label="Next">
+              <ChevronRight size={20} />
+            </button>
+          </motion.div>
         </div>
       </div>
 
+      {/* ── Mobile: single card slider ── */}
       {isMobile ? (
         <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 20px" }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={slideKey}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, x: 40, scale: 0.96 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -40, scale: 0.96 }}
+              transition={{ duration: 0.45, type: "spring", stiffness: 100 }}
             >
               <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
-                <TestimonialCard {...testimonials[currentIndex]} text={testimonials[currentIndex].content} />
+                <TestimonialCard
+                  {...testimonials[currentIndex]}
+                  text={testimonials[currentIndex].content}
+                  index={0}
+                />
               </div>
             </motion.div>
           </AnimatePresence>
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 32 }}>
+
+          {/* Dot indicators */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 28 }}>
             {testimonials.map((_, i) => (
-              <button
+              <motion.button
                 key={i}
                 onClick={() => { setCurrentIndex(i); setSlideKey(k => k + 1); pause(); resume(3000); }}
+                animate={{ width: i === currentIndex ? 28 : 8 }}
+                transition={{ duration: 0.3 }}
                 style={{
-                  width: i === currentIndex ? 24 : 8, height: 4, borderRadius: 99,
-                  background: i === currentIndex ? "#dc2626" : "#e5e7eb", border: "none",
+                  height: 4, borderRadius: 99,
+                  background: i === currentIndex ? "#dc2626" : "#e5e7eb",
+                  border: "none", cursor: "pointer", padding: 0,
                 }}
               />
             ))}
           </div>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        /* ── Desktop: single infinite scroll row ── */
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Main Row — scrolls right */}
           <div
             ref={scrollRef1}
-            style={{ display: "flex", overflowX: "hidden", cursor: "grab", padding: "20px 0" }}
+            className="scroll-row"
             onMouseDown={e => onMD(e, scrollRef1)}
-            onMouseUp={onMU} onMouseLeave={onML} onMouseMove={onMM}
+            onMouseUp={onMU}
+            onMouseLeave={onML}
+            onMouseMove={onMM}
             onMouseEnter={pause}
           >
             {[...testimonials, ...testimonials, ...testimonials].map((t, i) => (
-              <TestimonialCard key={i} {...t} text={t.content} />
+              <TestimonialCard key={i} {...t} text={t.content} index={i} />
             ))}
           </div>
-          {testimonials.length > 2 && (
-            <div
-              ref={scrollRef2}
-              style={{ display: "flex", overflowX: "hidden", cursor: "grab", padding: "20px 0" }}
-              onMouseDown={e => onMD(e, scrollRef2)}
-              onMouseUp={onMU} onMouseLeave={onML} onMouseMove={onMM}
-              onMouseEnter={pause}
-            >
-              {[...testimonials, ...testimonials, ...testimonials].reverse().map((t, i) => (
-                <TestimonialCard key={i} {...t} text={t.content} />
-              ))}
-            </div>
-          )}
         </div>
       )}
 
+      {/* ── Bottom stats ── */}
       <div style={{
-        maxWidth: 1600, margin: "64px auto 0", padding: "0 2rem",
+        maxWidth: 1600, margin: "72px auto 0", padding: "0 2rem",
         display: "flex", alignItems: "center", justifyContent: "center",
-        gap: 20, position: "relative", zIndex: 1, flexWrap: "wrap",
+        gap: 16, position: "relative", zIndex: 2, flexWrap: "wrap",
       }}>
-        {[
-          { num: "4.9", label: "Average Rating" },
-          { num: "12K+", label: "Happy Travelers" },
-          { num: "98%", label: "Would Recommend" },
-        ].map(({ num, label }, i) => (
-          <div key={i} style={{
-            display: "flex", alignItems: "center", gap: 12, background: "#fff",
-            border: "1px solid rgba(220,38,38,0.12)", borderRadius: 999,
-            padding: "12px 24px", boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-          }}>
-            <span style={{ fontFamily: "'Bebas Neue', cursive", fontSize: 26, color: "#dc2626", lineHeight: 1 }}>{num}</span>
-            <span style={{
-              fontFamily: "'Barlow', sans-serif", fontWeight: 700, fontSize: 10,
-              letterSpacing: "0.25em", textTransform: "uppercase", color: "#9ca3af",
-            }}>{label}</span>
-          </div>
-        ))}
+        <AnimatedStat num="4.9★" label="Average Rating" delay={0} />
+        <AnimatedStat num="12K+" label="Happy Travelers" delay={0.12} />
+        <AnimatedStat num="98%" label="Would Recommend" delay={0.24} />
       </div>
     </section>
   );

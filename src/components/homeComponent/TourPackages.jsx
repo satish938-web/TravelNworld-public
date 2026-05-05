@@ -8,8 +8,11 @@ const TourPackages = () => {
   const navigate = useNavigate();
   const [internationalDestinations, setInternationalDestinations] = useState([]);
   const [domesticDestinations, setDomesticDestinations] = useState([]);
+  const [loadingIntl, setLoadingIntl] = useState(true);
+  const [loadingDom, setLoadingDom] = useState(true);
 
   useEffect(() => {
+    setLoadingIntl(true);
     getJson("/api/destinations/type/international")
       .then((res) => {
         if (res?.data && Array.isArray(res.data)) {
@@ -20,9 +23,11 @@ const TourPackages = () => {
             type: "international",
             slug: d.slug
           })));
+          setLoadingIntl(false);
         }
       }).catch(err => console.error("International Fetch Error:", err));
 
+    setLoadingDom(true);
     getJson("/api/destinations/type/domestic")
       .then((res) => {
         if (res?.data && Array.isArray(res.data)) {
@@ -33,9 +38,22 @@ const TourPackages = () => {
             type: "domestic",
             slug: d.slug
           })));
+          setLoadingDom(false);
         }
       }).catch(err => console.error("Domestic Fetch Error:", err));
   }, []);
+
+  const SkeletonSection = ({ title }) => (
+    <div className="w-full max-w-[1800px] mx-auto px-6 mb-32 animate-pulse">
+      <div className="h-6 w-32 bg-gray-200 rounded mb-4" />
+      <div className="h-10 w-64 bg-gray-200 rounded mb-12" />
+      <div className="flex gap-6 overflow-hidden">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex-shrink-0 w-[280px] h-[380px] bg-gray-100 rounded-[2rem]" />
+        ))}
+      </div>
+    </div>
+  );
 
   const handleCardClick = (title, type, slug) => {
     const destinationId = slug || title.toLowerCase().replace(/\s+/g, "-");
@@ -217,10 +235,6 @@ const TourPackages = () => {
     );
   };
 
-  if (internationalDestinations.length === 0 && domesticDestinations.length === 0) {
-    return null;
-  }
-
   return (
     <div className="w-full py-24 bg-white overflow-hidden">
       {/* Main Section Header */}
@@ -261,21 +275,29 @@ const TourPackages = () => {
         </motion.p>
       </div>
 
-      <Section 
-        title="International" 
-        data={internationalDestinations} 
-        type="international" 
-      />
+      {loadingIntl ? (
+        <SkeletonSection title="International" />
+      ) : internationalDestinations.length > 0 && (
+        <Section 
+          title="International" 
+          data={internationalDestinations} 
+          type="international" 
+        />
+      )}
       
       <div className="max-w-[1600px] mx-auto px-4 py-16">
         <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
       </div>
 
-      <Section 
-        title="Domestic" 
-        data={domesticDestinations} 
-        type="domestic" 
-      />
+      {loadingDom ? (
+        <SkeletonSection title="Domestic" />
+      ) : domesticDestinations.length > 0 && (
+        <Section 
+          title="Domestic" 
+          data={domesticDestinations} 
+          type="domestic" 
+        />
+      )}
     </div>
   );
 };

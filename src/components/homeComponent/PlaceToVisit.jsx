@@ -8,6 +8,7 @@ const AUTO_SCROLL_SPEED = 1.5;
 
 const PlaceToVisit = () => {
   const [places, setPlaces] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("International");
   const [isPaused, setIsPaused] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -24,8 +25,8 @@ const PlaceToVisit = () => {
   const navigate = useNavigate();
 
   const fetchPlaces = async (category) => {
+    setLoading(true);
     try {
-      // Use 'type' for International/Domestic filtering
       const res = await getJson(`/api/destinations/cards?type=${category.toLowerCase()}`);
       if (res?.data && Array.isArray(res.data)) {
         setPlaces(res.data.map((d, i) => ({
@@ -35,11 +36,16 @@ const PlaceToVisit = () => {
           desc: d.shortDescription || "Explore top attractions.",
           img: d.coverImageUrl
         })));
+        setLoading(false);
       }
     } catch (err) {
       console.error("Fetch Error:", err);
     }
   };
+
+  const SkeletonCard = () => (
+    <div className="flex-shrink-0 w-[290px] aspect-[4/5] bg-gray-100 rounded-[2rem] animate-pulse" />
+  );
 
   useEffect(() => {
     fetchPlaces(activeCategory);
@@ -100,8 +106,6 @@ const PlaceToVisit = () => {
       pause(); resume();
     }
   };
-
-  if (places.length === 0) return null;
 
   return (
     <section className="w-full bg-white py-24 relative overflow-hidden">
@@ -167,69 +171,75 @@ const PlaceToVisit = () => {
 
         {/* Cards */}
         <div className="relative">
-          {isMobile ? (
-            <div className="px-4">
-              <div 
-                className="group relative w-full rounded-2xl overflow-hidden shadow-lg mx-auto aspect-[4/5] cursor-pointer" 
-                key={slideKey}
-                onClick={() => {
-                  const slug = places[currentIndex].slug || places[currentIndex].name.toLowerCase().replace(/\s+/g, '-');
-                  navigate(activeCategory === "International" ? `/international-itinerary/${slug}` : `/domestic-itinerary/${slug}`);
-                }}
-              >
-                <img
-                  src={places[currentIndex].img}
-                  alt={places[currentIndex].name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
-                  <h3 className="text-white text-2xl font-black mb-2 group-hover:text-red-500 transition-colors">{places[currentIndex].name}</h3>
-                  <p className="text-gray-300 text-sm line-clamp-2 leading-relaxed">{places[currentIndex].desc}</p>
-                </div>
-              </div>
-              <div className="flex justify-center gap-2 mt-8">
-                {places.map((_, i) => (
-                  <button
-                    key={i}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? "w-8 bg-red-600" : "w-2 bg-gray-200"}`}
-                    onClick={() => { setCurrentIndex(i); setSlideKey(k => k + 1); pause(); resume(3000); }}
-                  />
-                ))}
-              </div>
+          {loading ? (
+            <div className="flex gap-6 overflow-hidden">
+              {[...Array(5)].map((_, i) => <SkeletonCard key={i} />)}
             </div>
-          ) : (
-            <div
-              ref={scrollRef}
-              className="flex gap-6 overflow-x-hidden select-none py-10 -my-10"
-              style={{ cursor: "grab" }}
-              onMouseDown={onMD} onMouseUp={onMU}
-              onMouseLeave={onML} onMouseMove={onMM}
-              onMouseEnter={pause}
-              onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}
-            >
-              {[...places, ...places].map((place, i) => (
-                <div
-                  key={i}
+          ) : places.length > 0 && (
+            isMobile ? (
+              <div className="px-4">
+                <div 
+                  className="group relative w-full rounded-2xl overflow-hidden shadow-lg mx-auto aspect-[4/5] cursor-pointer" 
+                  key={slideKey}
                   onClick={() => {
-                    const slug = place.slug || place.name.toLowerCase().replace(/\s+/g, '-');
+                    const slug = places[currentIndex].slug || places[currentIndex].name.toLowerCase().replace(/\s+/g, '-');
                     navigate(activeCategory === "International" ? `/international-itinerary/${slug}` : `/domestic-itinerary/${slug}`);
                   }}
-                  className="flex-shrink-0 w-[290px] group relative rounded-[2rem] overflow-hidden shadow-xl aspect-[4/5] cursor-pointer border border-gray-100/50"
                 >
                   <img
-                    src={place.img}
-                    alt={place.name}
+                    src={places[currentIndex].img}
+                    alt={places[currentIndex].name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8 opacity-90 group-hover:opacity-100 transition-opacity">
-                    <h3 className="text-white text-3xl font-extrabold mb-1 group-hover:text-red-500 transition-colors font-['Montserrat'] tracking-wide">{place.name}</h3>
-                    <p className="text-gray-100 text-[16px] line-clamp-2 leading-relaxed font-['Inter']">
-                      {place.desc}
-                    </p>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-8">
+                    <h3 className="text-white text-2xl font-black mb-2 group-hover:text-red-500 transition-colors">{places[currentIndex].name}</h3>
+                    <p className="text-gray-300 text-sm line-clamp-2 leading-relaxed">{places[currentIndex].desc}</p>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex justify-center gap-2 mt-8">
+                  {places.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? "w-8 bg-red-600" : "w-2 bg-gray-200"}`}
+                      onClick={() => { setCurrentIndex(i); setSlideKey(k => k + 1); pause(); resume(3000); }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div
+                ref={scrollRef}
+                className="flex gap-6 overflow-x-hidden select-none py-10 -my-10"
+                style={{ cursor: "grab" }}
+                onMouseDown={onMD} onMouseUp={onMU}
+                onMouseLeave={onML} onMouseMove={onMM}
+                onMouseEnter={pause}
+                onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}
+              >
+                {[...places, ...places].map((place, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      const slug = place.slug || place.name.toLowerCase().replace(/\s+/g, '-');
+                      navigate(activeCategory === "International" ? `/international-itinerary/${slug}` : `/domestic-itinerary/${slug}`);
+                    }}
+                    className="flex-shrink-0 w-[290px] group relative rounded-[2rem] overflow-hidden shadow-xl aspect-[4/5] cursor-pointer border border-gray-100/50"
+                  >
+                    <img
+                      src={place.img}
+                      alt={place.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-8 opacity-90 group-hover:opacity-100 transition-opacity">
+                      <h3 className="text-white text-3xl font-extrabold mb-1 group-hover:text-red-500 transition-colors font-['Montserrat'] tracking-wide">{place.name}</h3>
+                      <p className="text-gray-100 text-[16px] line-clamp-2 leading-relaxed font-['Inter']">
+                        {place.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           )}
         </div>
 

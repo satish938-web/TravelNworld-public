@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import logo from '../assets/images/logo/logo.png';
 import PlanMyTripForm from '../forms/PlanMyTripForm';
 
@@ -7,6 +7,7 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
   const [showTripForm, setShowTripForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
 
   React.useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -14,10 +15,32 @@ const NavBar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinkClass = ({ isActive }) =>
-    isActive
+  const getIsActive = (path) => {
+    const currentPath = location.pathname;
+    if (path === '/') return currentPath === '/';
+    
+    // Custom logic for Packages
+    if (path === '/packages') {
+      return currentPath.startsWith('/packages') || 
+             currentPath.includes('-itinerary');
+    }
+
+    // Custom logic for Destination
+    if (path === '/destination') {
+      return currentPath.startsWith('/destination') || 
+             currentPath === '/domestic' || 
+             currentPath === '/international';
+    }
+
+    return currentPath.startsWith(path);
+  };
+
+  const navLinkClass = (path) => {
+    const active = getIsActive(path);
+    return active
       ? 'text-red-600 font-bold text-[17px] relative after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[2px] after:bg-red-600 after:rounded-full'
       : `font-medium text-[17px] transition-all duration-300 hover:text-red-600 ${isScrolled ? "text-gray-700" : "text-gray-800"}`;
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-[100] no-print ${
@@ -33,14 +56,14 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6 items-center justify-center flex-1 ml-10">
-            <NavLink to="/" end className={navLinkClass}>Home</NavLink>
-            <NavLink to="/aboutUs" className={navLinkClass}>About us</NavLink>
-            <NavLink to="/agents" className={navLinkClass}>Agents</NavLink>
-            <NavLink to="/packages" className={navLinkClass}>Packages</NavLink>
-            <NavLink to="/destination" className={navLinkClass}>Destination</NavLink>
-            <NavLink to="/b2blogin" className={navLinkClass}>B2B login</NavLink>
-            <NavLink to="/blogs" className={navLinkClass}>Blogs</NavLink>
-            <NavLink to="/contactUs" className={navLinkClass}>ContactUs</NavLink>
+            <NavLink to="/" className={() => navLinkClass('/')}>Home</NavLink>
+            <NavLink to="/aboutUs" className={() => navLinkClass('/aboutUs')}>About us</NavLink>
+            <NavLink to="/agents" className={() => navLinkClass('/agents')}>Agents</NavLink>
+            <NavLink to="/packages" className={() => navLinkClass('/packages')}>Packages</NavLink>
+            <NavLink to="/destination" className={() => navLinkClass('/destination')}>Destination</NavLink>
+            <NavLink to="/b2blogin" className={() => navLinkClass('/b2blogin')}>B2B login</NavLink>
+            <NavLink to="/blogs" className={() => navLinkClass('/blogs')}>Blogs</NavLink>
+            <NavLink to="/contactUs" className={() => navLinkClass('/contactUs')}>ContactUs</NavLink>
           </div>
 
           <div className="hidden md:flex items-center">
@@ -77,14 +100,14 @@ const NavBar = () => {
       {/* Mobile Dropdown */}
       {open && (
         <div className="md:hidden bg-white px-4 pt-4 pb-6 shadow flex flex-col space-y-4 transition-all duration-300 ease-in-out">
-          <NavLink to="/" end onClick={() => setOpen(false)} className={navLinkClass}>Home</NavLink>
-          <NavLink to="/aboutUs" onClick={() => setOpen(false)} className={navLinkClass}>About us</NavLink>
-          <NavLink to="/agents" onClick={() => setOpen(false)} className={navLinkClass}>Agents</NavLink>
-          <NavLink to="/packages" onClick={() => setOpen(false)} className={navLinkClass}>Packages</NavLink>
-          <NavLink to="/destination" onClick={() => setOpen(false)} className={navLinkClass}>Destination</NavLink>
-          <NavLink to="/b2blogin" onClick={() => setOpen(false)} className={navLinkClass}>B2B login</NavLink>
-          <NavLink to="/blogs" onClick={() => setOpen(false)} className={navLinkClass}>Blogs</NavLink>
-          <NavLink to="/contactUs" onClick={() => setOpen(false)} className={navLinkClass}>ContactUs</NavLink>
+          <NavLink to="/" onClick={() => setOpen(false)} className={() => navLinkClass('/')}>Home</NavLink>
+          <NavLink to="/aboutUs" onClick={() => setOpen(false)} className={() => navLinkClass('/aboutUs')}>About us</NavLink>
+          <NavLink to="/agents" onClick={() => setOpen(false)} className={() => navLinkClass('/agents')}>Agents</NavLink>
+          <NavLink to="/packages" onClick={() => setOpen(false)} className={() => navLinkClass('/packages')}>Packages</NavLink>
+          <NavLink to="/destination" onClick={() => setOpen(false)} className={() => navLinkClass('/destination')}>Destination</NavLink>
+          <NavLink to="/b2blogin" onClick={() => setOpen(false)} className={() => navLinkClass('/b2blogin')}>B2B login</NavLink>
+          <NavLink to="/blogs" onClick={() => setOpen(false)} className={() => navLinkClass('/blogs')}>Blogs</NavLink>
+          <NavLink to="/contactUs" onClick={() => setOpen(false)} className={() => navLinkClass('/contactUs')}>ContactUs</NavLink>
 
           <div className="pt-4 border-t">
             <button

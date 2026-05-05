@@ -6,13 +6,18 @@ import travelItemPropType from '../../propTypes/travelItemPropType.js';
 /**
  * Parses the dynamic tags from the 'services' field
  */
-const parseServices = (servicesText) => {
-  if (!servicesText || typeof servicesText !== 'string') return [];
+const parseServices = (servicesInput) => {
+  if (!servicesInput) return [];
   
-  const services = servicesText
-    .split(',')
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+  let services = [];
+  if (Array.isArray(servicesInput)) {
+    services = servicesInput;
+  } else if (typeof servicesInput === 'string') {
+    services = servicesInput
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+  }
 
   if (services.length === 0) return [];
 

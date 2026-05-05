@@ -44,9 +44,10 @@ function Overview({ travelItem }) {
             transition={{ delay: 0.4 }}
             className="prose prose-slate prose-base max-w-none"
           >
-            <p className="text-slate-600 leading-relaxed text-sm md:text-base whitespace-pre-wrap">
-              {travelItem.overview}
-            </p>
+            <div 
+              className="text-slate-600 leading-relaxed text-sm md:text-base quill-content"
+              dangerouslySetInnerHTML={{ __html: travelItem.overview }}
+            />
           </motion.div>
         </div>
 

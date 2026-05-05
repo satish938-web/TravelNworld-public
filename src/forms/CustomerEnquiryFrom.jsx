@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 const CustomerEnquiryForm = ({ travelItem, onClose }) => {
   const [formData, setFormData] = useState({
@@ -50,30 +50,6 @@ const CustomerEnquiryForm = ({ travelItem, onClose }) => {
     return null;
   };
 
-  const showSuccessAlert = () => {
-    Swal.fire({
-      title: "Enquiry Submitted!",
-      text: `We'll contact you soon about your trip to ${formData.destination || "your dream destination"}.`,
-      icon: "success",
-      confirmButtonColor: "#3b82f6", // blue-500
-      confirmButtonText: "Great!",
-      timer: 3000,
-      timerProgressBar: true,
-    }).then(() => {
-      closeModal();
-    });
-  };
-
-  const showErrorAlert = (message) => {
-    Swal.fire({
-      title: "Submission Failed",
-      text: message,
-      icon: "error",
-      confirmButtonColor: "#3b82f6",
-      confirmButtonText: "Try Again",
-    });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationError = validateForm();
@@ -85,6 +61,7 @@ const CustomerEnquiryForm = ({ travelItem, onClose }) => {
     setIsSubmitting(true);
     setSubmitError(null);
     setSubmitSuccess(false);
+    const loadToast = toast.loading("Submitting enquiry...");
 
     try {
       // Replace with real API call
@@ -92,7 +69,12 @@ const CustomerEnquiryForm = ({ travelItem, onClose }) => {
       console.log("Submitted data:", formData);
 
       setSubmitSuccess(true);
-      showSuccessAlert();
+      toast.success("Enquiry submitted! We'll contact you soon.", { id: loadToast });
+      
+      // Auto close after success
+      setTimeout(() => {
+        closeModal();
+      }, 3000);
     } catch (error) {
       console.error("Error submitting enquiry:", error);
       let errorMessage = "An unexpected error occurred. Please try again.";
@@ -104,7 +86,7 @@ const CustomerEnquiryForm = ({ travelItem, onClose }) => {
       }
 
       setSubmitError(errorMessage);
-      showErrorAlert(errorMessage);
+      toast.error(errorMessage, { id: loadToast });
     } finally {
       setIsSubmitting(false);
     }

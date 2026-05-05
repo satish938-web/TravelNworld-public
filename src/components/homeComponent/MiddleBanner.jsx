@@ -5,25 +5,41 @@ import { getImageUrl, API_BASE } from "../../utils/api";
 
 const MiddleBanner = () => {
   const [banners, setBanners] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [selectedImg, setSelectedImg] = useState(null);
 
+  // No interval needed for CSS marquee
+  
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentOffset(prev => prev + 1);
-    }, 4000); // 4 seconds per slide
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
+    setLoading(true);
     axios
       .get(`${API_BASE}/api/banners?position=middle`)
-      .then((res) => setBanners(res.data))
+      .then((res) => {
+        if (res.data) {
+          setBanners(res.data);
+          setLoading(false);
+        }
+      })
       .catch((err) => {
         console.error("Error fetching banners:", err);
-        setBanners([]);
+        // Keep loading true for skeleton if backend is down
       });
   }, []);
+
+  if (loading) {
+    return (
+      <div style={{ ...styles.wrapper, background: '#f3f4f6', height: 280 }} className="animate-pulse">
+        <div style={{ ...styles.marqueeWrapper, opacity: 0.5 }}>
+          <div style={{ ...styles.marqueeContent, gap: 20 }}>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} style={{ ...styles.marqueeCard, background: '#e5e7eb', width: 340, height: 190, borderRadius: 20 }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!banners.length) return null;
 
@@ -37,77 +53,28 @@ const MiddleBanner = () => {
       <div style={{ ...styles.orb, ...styles.orb3 }} />
       <div style={styles.scanlines} />
 
-      {/* Triple Slide Carousel with Controls */}
-      <div style={styles.carouselContainer}>
-        <button 
-          onClick={() => setCurrentOffset(prev => prev - 1)}
-          style={{ ...styles.navBtn, left: "30px" }}
-          className="nav-btn-hover"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
+      {/* Continuous Marquee Carousel */}
+      <div style={styles.marqueeWrapper}>
+        <div style={styles.marqueeContent}>
+          {loopBanners.map((banner, idx) => {
+            if (!banner) return null;
+            const isVideo = banner.imageUrl?.toLowerCase().endsWith('.mp4') || banner.imageUrl?.toLowerCase().endsWith('.webm');
 
-        <button 
-          onClick={() => setCurrentOffset(prev => prev + 1)}
-          style={{ ...styles.navBtn, right: "30px" }}
-          className="nav-btn-hover"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        </button>
-
-        <div style={styles.tripleGrid}>
-          <AnimatePresence mode="popLayout" initial={false}>
-            {(() => {
-              // Take 3 banners at a time for desktop
-              const b1 = banners[(currentOffset % banners.length + banners.length) % banners.length];
-              const b2 = banners[((currentOffset + 1) % banners.length + banners.length) % banners.length];
-              const b3 = banners[((currentOffset + 2) % banners.length + banners.length) % banners.length];
-              
-              let trio = [];
-              if (banners.length >= 3) trio = [b1, b2, b3];
-              else if (banners.length === 2) trio = [b1, b2];
-              else trio = [b1];
-
-              return trio.map((banner, idx) => {
-                if (!banner) return null;
-                const isVideo = banner.imageUrl?.toLowerCase().endsWith('.mp4') || banner.imageUrl?.toLowerCase().endsWith('.webm');
-
-                return (
-                  <motion.div
-                    key={`banner-${banner._id}-${idx}`}
-                    layout
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.6, ease: "circOut" }}
-                    style={styles.tripleBannerCard}
-                    onClick={() => setSelectedImg(banner)}
-                  >
-                    {isVideo ? (
-                      <video src={getImageUrl(banner.imageUrl)} autoPlay muted loop playsInline style={styles.image} />
-                    ) : (
-                      <img src={getImageUrl(banner.imageUrl)} alt={banner.title} style={styles.image} />
-                    )}
-                    <div style={styles.cardGlow} />
-                  </motion.div>
-                );
-              });
-            })()}
-          </AnimatePresence>
-        </div>
-
-        {/* Progress Bar Indicators */}
-        <div style={styles.indicatorWrap}>
-          {banners.map((_, i) => (
-            <div 
-              key={i} 
-              style={{
-                ...styles.indicatorDot,
-                background: (currentOffset % banners.length) === i ? "#dc2626" : "rgba(255,255,255,0.2)",
-                width: (currentOffset % banners.length) === i ? "30px" : "8px"
-              }}
-            />
-          ))}
+            return (
+              <div
+                key={`banner-${banner._id}-${idx}`}
+                style={styles.marqueeCard}
+                onClick={() => setSelectedImg(banner)}
+              >
+                {isVideo ? (
+                  <video src={getImageUrl(banner.imageUrl)} autoPlay muted loop playsInline style={styles.image} />
+                ) : (
+                  <img src={getImageUrl(banner.imageUrl)} alt={banner.title} style={styles.image} />
+                )}
+                <div style={styles.cardGlow} />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -145,13 +112,9 @@ const MiddleBanner = () => {
       </AnimatePresence>
 
       <style>{`
-        .nav-btn-hover {
-          transition: all 0.3s ease;
-        }
-        .nav-btn-hover:hover {
-          background: rgba(220, 38, 38, 0.9) !important;
-          transform: translateY(-50%) scale(1.1) !important;
-          box-shadow: 0 0 20px rgba(220, 38, 38, 0.5) !important;
+        @keyframes marqueeMiddle {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
         }
       `}</style>
     </div>
@@ -163,7 +126,7 @@ const styles = {
     position: "relative",
     overflow: "hidden",
     width: "100%",
-    padding: "0",
+    padding: "40px 0",
     margin: "20px 0",
     display: "flex",
     flexDirection: "column",
@@ -174,7 +137,7 @@ const styles = {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(135deg, #0a0000 0%, #1a0000 30%, #220000 60%, #0d0000 100%)",
+      "linear-gradient(135deg, #dc2626 0%, #000000 100%)",
     zIndex: 0,
   },
 
@@ -282,59 +245,29 @@ const styles = {
   },
 
   // ── Row ──
-  carouselContainer: {
+  marqueeWrapper: {
     position: "relative",
     zIndex: 5,
     width: "100%",
-    margin: "0 auto",
-    height: "280px",
-    padding: "0",
-  },
-  navBtn: {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    width: "44px",
-    height: "44px",
-    borderRadius: "50%",
-    background: "rgba(0,0,0,0.4)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    height: "220px",
+    overflow: "hidden",
     display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-    zIndex: 20,
-    backdropFilter: "blur(8px)",
   },
-  tripleGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "0px",
-    width: "100%",
-    height: "100%",
+  marqueeContent: {
+    display: "flex",
+    gap: "20px",
+    padding: "0 20px",
+    width: "max-content",
+    animation: "marqueeMiddle 35s linear infinite",
   },
-  tripleBannerCard: {
+  marqueeCard: {
     position: "relative",
-    width: "100%",
+    width: "360px",
     height: "100%",
-    borderRadius: "0px",
+    borderRadius: "12px",
     overflow: "hidden",
     cursor: "pointer",
-    border: "none",
-  },
-  indicatorWrap: {
-    position: "absolute",
-    bottom: "30px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    display: "flex",
-    gap: "8px",
-    zIndex: 10,
-  },
-  indicatorDot: {
-    height: "8px",
-    borderRadius: "10px",
-    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+    flexShrink: 0,
   },
 
   // ── Card internals ──

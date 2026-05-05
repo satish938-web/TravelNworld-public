@@ -4,6 +4,8 @@ import { API_BASE } from '../../utils/api';
 import { Star, MessageSquare, User, Calendar, Loader2, Trash2, Edit3, X, Check } from 'lucide-react';
 import { HiSearch, HiAdjustments, HiOutlineChatAlt2 } from 'react-icons/hi';
 
+import toast from 'react-hot-toast';
+
 export default function MyReviews() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +41,7 @@ export default function MyReviews() {
     } catch (err) {
       console.error("Error fetching reviews", err);
       setError("Failed to load reviews.");
+      toast.error("Failed to load reviews");
     } finally {
       setLoading(false);
     }
@@ -51,6 +54,7 @@ export default function MyReviews() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this review?")) return;
     
+    const loadToast = toast.loading("Deleting review...");
     try {
       setActionLoading(true);
       const token = localStorage.getItem("token");
@@ -58,8 +62,9 @@ export default function MyReviews() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setReviews(prev => prev.filter(r => r._id !== id));
+      toast.success("Review deleted successfully", { id: loadToast });
     } catch (err) {
-      alert("Failed to delete review");
+      toast.error("Failed to delete review", { id: loadToast });
     } finally {
       setActionLoading(false);
     }
@@ -76,6 +81,7 @@ export default function MyReviews() {
   };
 
   const handleUpdate = async (id) => {
+    const loadToast = toast.loading("Updating review...");
     try {
       setActionLoading(true);
       const token = localStorage.getItem("token");
@@ -86,9 +92,10 @@ export default function MyReviews() {
       if (response.data?.success) {
         setReviews(prev => prev.map(r => r._id === id ? { ...r, ...editForm } : r));
         setEditingId(null);
+        toast.success("Review updated successfully", { id: loadToast });
       }
     } catch (err) {
-      alert("Failed to update review");
+      toast.error("Failed to update review", { id: loadToast });
     } finally {
       setActionLoading(false);
     }

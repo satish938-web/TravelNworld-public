@@ -6,6 +6,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { API_BASE } from "../utils/api";
 
+import toast from "react-hot-toast";
+
 const B2BLogin = () => {
    
 
@@ -14,7 +16,6 @@ const B2BLogin = () => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loginMode, setLoginMode] = useState("agent");
   const navigate = useNavigate();
@@ -35,15 +36,14 @@ const B2BLogin = () => {
       localStorage.setItem("isProfileComplete", String(response.data.user.isProfileComplete));
       localStorage.setItem("user", JSON.stringify(response.data.user));
 
+      toast.success("Login successful!");
       if (!response.data.user.isProfileComplete) {
         navigate("/agent/profile");
       } else {
         navigate("/agent/");
       }
     } catch (error) {
-      setErrors({
-        form: error.response?.data?.message || "Google Authentication failed.",
-      });
+      toast.error(error.response?.data?.message || "Google Authentication failed.");
     } finally {
       setIsSubmitting(false);
     }
@@ -105,7 +105,11 @@ const B2BLogin = () => {
   }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (Object.keys(newErrors).length > 0) {
+      toast.error(Object.values(newErrors)[0]);
+      return false;
+    }
+    return true;
   }, [formData, isOtpSent, otp]);
 
   
@@ -131,12 +135,10 @@ const B2BLogin = () => {
        
 
         if (response.data.otpSent) {
-          //console.log("OTP Sent! Switching UI...");
-          //console.log("Switching to OTP UI");
           setIsOtpSent(true);
           setIsSubmitting(false);
-         // console.log("isOtpSent is now:", true);
-          return; // Stop here to let user enter OTP
+          toast.success("OTP sent to your email!");
+          return; 
         }
       } else {
         // --- STEP 2: Verify OTP ---
@@ -157,6 +159,7 @@ const B2BLogin = () => {
             localStorage.setItem("isProfileComplete", String(response.data.user.isProfileComplete));
             localStorage.setItem("user", JSON.stringify(response.data.user));
 
+            toast.success("Login successful!");
             if (!response.data.user.isProfileComplete) {
               navigate("/agent/profile");
             } else {
@@ -164,9 +167,7 @@ const B2BLogin = () => {
             }
               }
             } catch (error) {
-              setErrors({
-                form: error.response?.data?.message || "Authentication failed. Please try again.",
-              });
+              toast.error(error.response?.data?.message || "Authentication failed. Please try again.");
             } finally {
               setIsSubmitting(false);
             }
@@ -174,9 +175,39 @@ const B2BLogin = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left side - Illustration */}
-      <div className="hidden md:flex w-1/2 bg-gray-100 flex-col justify-center items-center p-10">
-        <img src={agenlogin} alt="Illustration" className="mb-6 rounded-md object-cover" />
+      {/* Left side - Luxurious Hero Panel */}
+      <div className="hidden md:flex w-1/2 relative flex-col justify-center items-start p-16 overflow-hidden bg-black">
+        <img 
+          src="https://images.unsplash.com/photo-1557682250-33bd709cbe85?q=80&w=2029&auto=format&fit=crop" 
+          alt="B2B Portal" 
+          className="absolute inset-0 w-full h-full object-cover opacity-40" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-red-900/10 mix-blend-overlay" />
+        
+        <div className="relative z-10 w-full max-w-lg">
+          <span className="px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest mb-6 inline-block">
+            Partner Portal
+          </span>
+          <h1 className="text-5xl font-black text-white mb-6 leading-tight tracking-tight font-['Montserrat']">
+            Empowering <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300 italic font-light">Global Agencies.</span>
+          </h1>
+          <p className="text-slate-300 text-lg font-light leading-relaxed mb-12">
+            Join the most exclusive network of travel professionals. Access premium inventory, manage your bookings seamlessly, and scale your business with our cutting-edge B2B tools.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-6 border-t border-white/10 pt-8 mt-auto">
+            <div>
+              <div className="text-3xl font-black text-white mb-1">500+</div>
+              <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">Premium Partners</div>
+            </div>
+            <div>
+              <div className="text-3xl font-black text-white mb-1">10k+</div>
+              <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">Luxury Itineraries</div>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -186,18 +217,6 @@ const B2BLogin = () => {
         <form onSubmit={handleSubmit} className="w-full max-w-md p-8 space-y-4" noValidate>
           <h1 className="text-3xl font-bold text-center text-gray-900 mb-2">Login</h1>
           <p className="text-center text-gray-600 mb-4">Welcome to the HelloTravel family!</p>
-
-          {submitSuccess && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-sm text-green-700">
-              <Check className="w-4 h-4" /> Login successful! Redirecting...
-            </div>
-          )}
-
-          {errors.form && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-sm text-red-700">
-              <AlertCircle className="w-4 h-4" /> {errors.form}
-            </div>
-          )}
 
           <div className="flex justify-center">
             <GoogleLogin

@@ -89,6 +89,8 @@ const purposeOptions = [
   "Pilgrimage", "Educational Tour", "Corporate Travel", "MICE Travel",
 ];
 
+import toast from "react-hot-toast";
+
 const PlanMyTripForm = ({ onClose = () => { } }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -199,6 +201,7 @@ const PlanMyTripForm = ({ onClose = () => { } }) => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    const loadToast = toast.loading("Submitting your trip plan...");
 
     try {
       const submissionData = {
@@ -221,9 +224,7 @@ const PlanMyTripForm = ({ onClose = () => { } }) => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       setSubmitSuccess(true);
-
-      // Show success message
-      // alert("Trip plan submitted successfully! TravelnWorld will contact you soon.");
+      toast.success("Trip plan submitted successfully!", { id: loadToast });
 
       // Close form after 2 seconds
       setTimeout(() => {
@@ -232,7 +233,7 @@ const PlanMyTripForm = ({ onClose = () => { } }) => {
 
     } catch (error) {
       console.error("Form submission failed:", error);
-      alert("There was an error submitting your form. Please try again.");
+      toast.error("Error submitting form. Please try again.", { id: loadToast });
     } finally {
       setIsSubmitting(false);
     }
@@ -261,13 +262,6 @@ const PlanMyTripForm = ({ onClose = () => { } }) => {
               <X className="w-4 h-4 text-gray-600" />
             </button>
           </div>
-
-          {submitSuccess && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-sm text-green-700">
-              <Check className="w-4 h-4" />
-              Trip plan submitted successfully
-            </div>
-          )}
 
           {/* Basic Information */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

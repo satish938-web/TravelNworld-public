@@ -7,6 +7,7 @@ import { country_and_states } from "./country-states";
 import { useNavigate } from "react-router-dom";
 import { API_BASE, S3_BASE_URL, getImageUrl } from "../../../utils/api";
 import { uploadToS3 } from "../../../utils/s3Upload";
+import toast from "react-hot-toast";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 
@@ -119,7 +120,6 @@ const Profile = () => {
 
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -150,6 +150,7 @@ const Profile = () => {
       }
     } catch (err) {
       console.error(err);
+      toast.error("Failed to load profile");
     } finally {
       setLoading(false);
     }
@@ -167,7 +168,7 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setSubmitSuccess(false);
+    const loadToast = toast.loading("Saving identity details...");
 
     try {
       const token = localStorage.getItem("token");
@@ -179,7 +180,7 @@ const Profile = () => {
           photoUrl = fileKey.startsWith("http") ? fileKey : `${S3_BASE_URL}/${fileKey}`;
         } catch (uploadErr) {
           console.error("Photo upload failed:", uploadErr);
-          alert("Photo upload failed. Please try again.");
+          toast.error("Photo upload failed. Please try again.", { id: loadToast });
           setIsSubmitting(false);
           return;
         }
@@ -189,20 +190,17 @@ const Profile = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setSubmitSuccess(true);
       if (res.data?.user) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        // Force isProfileComplete to true if backend sends it, or optimistically true since they saved
         const isComplete = res.data.user.isProfileComplete ?? true; 
         localStorage.setItem("isProfileComplete", String(isComplete));
         window.dispatchEvent(new Event("profileUpdated"));
-        // Update the local form data with the saved profile
         setFormData(prev => ({ ...prev, ...res.data.user }));
       }
-      setTimeout(() => setSubmitSuccess(false), 3000);
+      toast.success("Profile updated successfully!", { id: loadToast });
     } catch (err) {
-      alert("Error saving profile");
       console.error(err);
+      toast.error("Error saving profile: " + (err.response?.data?.message || err.message), { id: loadToast });
     } finally {
       setIsSubmitting(false);
     }
@@ -218,11 +216,6 @@ const Profile = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {submitSuccess && (
-          <div className="p-4 bg-green-50 border border-green-200 rounded-2xl flex items-center gap-3 text-sm text-green-700 font-bold animate-in fade-in slide-in-from-top-4">
-            <Check size={20} /> Changes saved successfully!
-          </div>
-        )}
 
         {/* Identity Section */}
         <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 md:p-10 shadow-sm relative overflow-hidden">
