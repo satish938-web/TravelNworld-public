@@ -76,7 +76,10 @@ function Overview({ travelItem }) {
             
             <div className="mt-6 pt-4 border-t border-white/10 relative z-10">
               <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Quick Facts</p>
-              <p className="text-xs text-white/60 whitespace-pre-wrap">{travelItem.quickInfo || "Verified registration verified by TravelNWorld."}</p>
+              <div 
+                className="text-[11px] text-white/70 leading-relaxed quill-content"
+                dangerouslySetInnerHTML={{ __html: travelItem.quickInfo || "Verified registration verified by TravelNWorld." }}
+              />
             </div>
 
             {travelItem.services && (

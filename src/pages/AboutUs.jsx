@@ -64,11 +64,11 @@ const AboutUs = () => {
 
           <h1
             className="text-white tracking-tighter mb-10 leading-[0.85] font-['Montserrat'] font-black"
-            style={{ fontSize: 'clamp(60px, 12vw, 150px)' }}
+            style={{ fontSize: 'clamp(40px, 10vw, 100px)' }}
           >
             THE PINNACLE <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-400 italic font-light">
-              Of Travel N World.
+              Of TravelN World.
             </span>
           </h1>
 

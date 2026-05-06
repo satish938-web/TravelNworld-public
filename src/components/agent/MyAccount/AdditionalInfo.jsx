@@ -391,14 +391,34 @@ const AdditionalInfo = () => {
         );
       case "overview":
         return (
-          <div className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-            <TextAreaField label="Agency Overview" value={formData.overview || ""} onChange={(e) => handleUpdateField("overview", e.target.value)} placeholder="Tell us about your travel agency..." rows={8} />
+          <div className="space-y-4 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">Agency Narrative</label>
+            <div className="quill-wrapper">
+              <ReactQuill 
+                theme="snow" 
+                value={formData.overview || ""} 
+                onChange={(val) => handleUpdateField("overview", val)} 
+                style={{ minHeight: '300px' }}
+                placeholder="Share your agency's unique travel philosophy..." 
+                className="bg-slate-50 rounded-2xl overflow-hidden border-none"
+              />
+            </div>
           </div>
         );
       case "quickInfo":
         return (
-          <div className="space-y-6 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-            <TextAreaField label="Quick Facts & Information" value={formData.quickInfo || ""} onChange={(e) => handleUpdateField("quickInfo", e.target.value)} placeholder="Key bullet points or summary..." />
+          <div className="space-y-4 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+            <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">Key Logistics & Facts</label>
+            <div className="quill-wrapper">
+              <ReactQuill 
+                theme="snow" 
+                value={formData.quickInfo || ""} 
+                onChange={(val) => handleUpdateField("quickInfo", val)} 
+                style={{ minHeight: '200px' }}
+                placeholder="Highlight essential booking info and agency stats..." 
+                className="bg-slate-50 rounded-2xl overflow-hidden border-none"
+              />
+            </div>
           </div>
         );
       case "services":

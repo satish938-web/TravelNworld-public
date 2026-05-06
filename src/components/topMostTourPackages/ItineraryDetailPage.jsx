@@ -144,6 +144,57 @@ const ItineraryDetailPage = () => {
   const [loading, setLoading]     = useState(true);
   const [notFound, setNotFound]   = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  
+  /* ── Lead Form State ────────────────────────────────────────────────── */
+  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [submittingLead, setSubmittingLead] = useState(false);
+  const [leadInfo, setLeadInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: ""
+  });
+
+  const handleEnquirySubmit = async (e) => {
+    e.preventDefault();
+    setSubmittingLead(true);
+    try {
+      const { default: axios } = await import("axios");
+      const { default: Swal } = await import("sweetalert2");
+      const { API_BASE } = await import("../../utils/api");
+
+      const payload = {
+        name: leadInfo.name,
+        email: leadInfo.email,
+        phone: leadInfo.phone,
+        your_requirements: leadInfo.message,
+        agentId: itinerary.agentId,
+        itineraryId: itinerary._id,
+        itineraryTitle: itinerary.title,
+        location: itinerary.destination || destinationLabel,
+        company_name: "Customer Lead", // Placeholder
+        agree: true
+      };
+
+      await axios.post(`${API_BASE}/api/enquiries`, payload);
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Enquiry Sent!',
+        text: 'The travel agent will contact you shortly.',
+        confirmButtonColor: '#dc2626',
+        timer: 3000
+      });
+      
+      setShowLeadForm(false);
+      setLeadInfo({ name: "", email: "", phone: "", message: "" });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to send enquiry. Please try again.");
+    } finally {
+      setSubmittingLead(false);
+    }
+  };
 
   const destinationLabel = slugToTitle(destinationId);
 
@@ -396,12 +447,95 @@ const ItineraryDetailPage = () => {
           >
             Get a Quote
           </button>
-          <Link to="/contactUs">
-            <button className="px-6 py-2.5 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl transition-all text-sm">
-              Enquire Now
-            </button>
-          </Link>
+          
+          <button 
+            onClick={() => setShowLeadForm(true)}
+            className="px-6 py-2.5 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl transition-all text-sm"
+          >
+            Enquire Now
+          </button>
         </div>
+
+        {/* ── Lead Form Modal ────────────────────────────────────────────── */}
+        {showLeadForm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-slide-up">
+              <div className="bg-premium-gradient p-6 text-white relative">
+                <button 
+                  onClick={() => setShowLeadForm(false)}
+                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 transition"
+                >
+                  <FaTimes />
+                </button>
+                <h3 className="text-xl font-bold">Enquire Now</h3>
+                <p className="text-red-100 text-sm mt-1">Interested in {itinerary.title}?</p>
+              </div>
+
+              <form onSubmit={handleEnquirySubmit} className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Your Name</label>
+                    <input 
+                      required
+                      type="text" 
+                      value={leadInfo.name}
+                      onChange={(e) => setLeadInfo({...leadInfo, name: e.target.value})}
+                      placeholder="e.g. John Doe"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Phone Number</label>
+                    <input 
+                      required
+                      type="tel" 
+                      value={leadInfo.phone}
+                      onChange={(e) => setLeadInfo({...leadInfo, phone: e.target.value})}
+                      placeholder="e.g. 9876543210"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Email Address</label>
+                  <input 
+                    required
+                    type="email" 
+                    value={leadInfo.email}
+                    onChange={(e) => setLeadInfo({...leadInfo, email: e.target.value})}
+                    placeholder="e.g. john@example.com"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase">Message / Requirements</label>
+                  <textarea 
+                    rows="3"
+                    value={leadInfo.message}
+                    onChange={(e) => setLeadInfo({...leadInfo, message: e.target.value})}
+                    placeholder="Tell us about your travel plans..."
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-sm resize-none"
+                  ></textarea>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <input type="checkbox" required id="agree" className="w-4 h-4 accent-red-600" />
+                  <label htmlFor="agree" className="text-xs text-gray-500">I agree to the terms and privacy policy.</label>
+                </div>
+
+                <button 
+                  type="submit"
+                  disabled={submittingLead}
+                  className="w-full py-3 bg-premium-gradient text-white font-bold rounded-xl shadow-lg shadow-red-200 hover:shadow-red-300 transform active:scale-[0.98] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {submittingLead ? "Submitting..." : "Send Enquiry"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* ── Tabs ──────────────────────────────────────────────────────── */}
         <div className="flex flex-wrap gap-2 mb-6 pb-2 border-b border-gray-200 overflow-x-auto">

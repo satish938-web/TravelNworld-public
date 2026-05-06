@@ -45,7 +45,7 @@ const ContactUs = () => {
           </motion.div>
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6 font-['Montserrat'] leading-[0.9]">
             Connect With <br className="md:hidden" />
-            <span className="text-slate-500 font-light italic">Our Concierge.</span>
+            <span className="text-red-600 font-black italic">Our Concierge.</span>
           </h1>
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed font-['Barlow']">
             Our global network of travel experts is at your disposal. Reach out to our dedicated concierge team for personalized service.

@@ -1,116 +1,74 @@
 export default function AdminLeads({ data }) {
+  const handleCall = () => {
+    if (data.seller.contact) window.location.href = `tel:${data.seller.contact}`;
+  };
+
+  const handleWhatsApp = () => {
+    if (data.seller.whatsapp) {
+      const message = `Hello ${data.seller.name}, I received your enquiry regarding ${data.destination}. How can I help you?`;
+      window.open(`https://wa.me/${data.seller.whatsapp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+  };
+
   return (
-    <div className="flex flex-col md:flex-row items-stretch bg-white shadow-md border border-indigo-200 rounded-xl p-4 w-full hover:shadow-lg transition-shadow duration-200 cursor-pointer">
+    <div className="flex flex-col md:flex-row items-stretch bg-white shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-slate-100 rounded-[2rem] p-6 w-full hover:shadow-xl transition-all duration-300 border-l-8 border-l-red-600">
       {/* Left Section */}
       <div className="flex-1 flex flex-col justify-between">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-2">
-          <span>{data.timeAgo}</span>
-          <span className="text-blue-700 font-medium underline cursor-pointer">
-            {data.destination}
+        <div className="flex flex-wrap items-center gap-3 text-xs mb-3">
+          <span className="bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-bold uppercase tracking-wider">{data.timeAgo}</span>
+          <span className="text-red-600 font-black uppercase tracking-widest bg-red-50 px-3 py-1 rounded-full">
+            Target: {data.destination}
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm mt-2">
-          <span className="flex items-center gap-1">
-            <svg width="14" height="14" fill="none">
-              <circle cx="7" cy="7" r="7" fill="#bbb" />
-            </svg>
-            <span className="font-semibold text-gray-700">From:</span>
-            <span className="font-semibold text-gray-700">{data.from}</span>
-          </span>
-          <span className="flex items-center gap-1">
-            <svg width="14" height="14" fill="none">
-              <rect width="14" height="14" fill="#bbb" />
-            </svg>
-            NA
-          </span>
+        <div className="space-y-3">
+          <h4 className="text-2xl font-black text-slate-900">{data.seller.name}</h4>
+          
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-2 text-slate-600 font-medium">
+              <span className="text-lg">📧</span>
+              <span className="text-sm">{data.seller.since}</span> {/* Email stored in since field in my mapping */}
+            </div>
+            <div className="flex items-center gap-2 text-slate-900 font-black">
+              <span className="text-lg">📞</span>
+              <span className="text-sm tracking-tight">{data.seller.contact}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm mt-2">
-          <span className="flex items-center gap-1">
-            <svg width="14" height="14" fill="none">
-              <circle cx="7" cy="7" r="7" fill="#bbb" />
-            </svg>
-            NA
-          </span>
-          <span className="flex items-center gap-1">
-            <svg width="14" height="14" fill="none">
-              <circle cx="7" cy="7" r="7" fill="#bbb" />
-            </svg>
-            NA
-          </span>
-        </div>
-
-        <div className="flex items-center gap-3 text-sm mt-2">
-          <span className="flex items-center gap-1">
-            Pax: 👤({data.pax.adults}) + 👶(0) 🍼(0)
-          </span>
-          <span className="flex items-center gap-1">
-            <svg width="14" height="14" fill="none">
-              <circle cx="7" cy="7" r="7" fill="#bbb" />
-            </svg>
-            NA
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 mt-3 text-sm">
-          <span>Quality:</span>
-          <span className="h-2 w-24 bg-gray-300 rounded-md relative">
-            <span
-              className="absolute h-2 bg-green-600 rounded-md"
-              style={{ width: "30%" }}
-            ></span>
-          </span>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-gray-500">
-          <span>
-            Source:{" "}
-            <span className="font-semibold text-black">{data.source}</span>
-          </span>
-          <span>
-            Sold:{" "}
-            <span className="font-semibold text-black">
-              {data.times_sold} Time
-            </span>
-          </span>
+        <div className="flex flex-wrap items-center gap-6 mt-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+            Source: <span className="text-slate-900">{data.source}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+            Pax: <span className="text-slate-900">Adults ({data.pax.adults})</span>
+          </div>
         </div>
       </div>
 
-      {/* Right Section */}
-      <div className="flex flex-col justify-between items-end md:pl-6 mt-4 md:mt-0 min-w-[200px]">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-gray-700 mb-2">
-            <svg width="14" height="14" fill="none">
-              <rect width="14" height="14" fill="#bbb" />
-            </svg>
-            <span>
-              {data.dates.start} - {data.dates.end} | {data.dates.nights_days}
-            </span>
-          </div>
-          <div className="text-lg font-bold text-gray-800 mb-1">
-            ₹ {data.price.toLocaleString()}
-          </div>
-        </div>
-
-        <div>
-          <a
-            href="#"
-            className="text-blue-700 text-sm font-semibold block"
+      {/* Right Section - Action Buttons */}
+      <div className="flex flex-col justify-center items-center md:items-end md:pl-8 mt-6 md:mt-0 border-t md:border-t-0 md:border-l border-slate-100 pt-6 md:pt-0">
+        <div className="flex flex-col gap-3 w-full sm:w-auto">
+          <button 
+            onClick={handleCall}
+            className="flex items-center justify-center gap-3 bg-red-600 hover:bg-red-700 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-lg shadow-red-200"
           >
-            {data.seller.name}
-          </a>
-          <span className="text-xs text-gray-500 block mb-2">
-            Since: {data.seller.since}
-          </span>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="cursor-pointer text-xl">📞</span>
-            <span className="cursor-pointer text-xl">🟢</span>
-          </div>
-          <button className="bg-violet-600 hover:bg-violet-700 text-white px-5 py-2 rounded-md font-medium text-sm transition-colors duration-200">
-            Buy Now
+            <span>Call Customer</span>
+          </button>
+          
+          <button 
+            onClick={handleWhatsApp}
+            className="flex items-center justify-center gap-3 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-lg shadow-emerald-100"
+          >
+            <span>WhatsApp Now</span>
           </button>
         </div>
+        
+        <p className="mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
+          Lead ID: {data._id?.slice(-8).toUpperCase()}
+        </p>
       </div>
     </div>
   );

@@ -284,17 +284,14 @@ const Hero = ({
         >
           {/* ── Atmospheric layers ── */}
           <GlowOrbs />
-          <DiagonalBars />
           <Particles />
-          <ScanLines />
-          <Grain />
 
           {/* ── Background Layer (Always visible until video covers it) ── */}
           <div className="absolute inset-0 z-0">
             <img
               src={FallbackImage}
               alt="Hero Background"
-              className="w-full h-full object-cover opacity-50 grayscale-[0.3]"
+              className="w-full h-full object-cover opacity-100 grayscale-0"
             />
             {loading && (
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" 
@@ -342,7 +339,7 @@ const Hero = ({
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                   onLoad={() => setIsReady(true)}
-                  className="absolute w-full h-full object-cover z-0 opacity-60"
+                  className="absolute w-full h-full object-cover z-0 opacity-100"
                 />
               );
             })()}
@@ -364,7 +361,14 @@ const Hero = ({
             className="absolute inset-0 z-10"
             style={{
               background:
-                "linear-gradient(105deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.10) 80%, transparent 100%)",
+                "linear-gradient(105deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 45%, transparent 100%)",
+            }}
+          />
+          {/* Top fade - Stronger */}
+          <div
+            className="absolute inset-x-0 top-0 h-64 z-10"
+            style={{
+              background: "linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)",
             }}
           />
           {/* Bottom fade */}
