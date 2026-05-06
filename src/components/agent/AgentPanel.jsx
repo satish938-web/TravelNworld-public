@@ -383,7 +383,7 @@ const AgentPanel = () => {
               </div>
             </div>
 
-            <Link to="report" className="ap-view-btn" style={{ marginTop: "auto", marginTop: 16 }}>
+            <Link to="report" className="ap-view-btn" style={{ marginTop: 16 }}>
               Full Report <ArrowUpRight size={15} />
             </Link>
           </div>
